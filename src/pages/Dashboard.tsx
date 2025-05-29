@@ -99,7 +99,7 @@ export const Dashboard = () => {
     <div 
       className="min-h-screen"
       style={{
-        backgroundImage: `url('/lovable-uploads/34a68d57-18c7-4968-bd09-5785867397a1.png')`,
+        backgroundImage: `url('/lovable-uploads/5c7d5634-9bc5-448c-87a8-3a0982058d01.png')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
