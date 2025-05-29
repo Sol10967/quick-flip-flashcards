@@ -1,11 +1,14 @@
+
 import { useAuth } from '../hooks/useAuth';
 import { Button } from './ui/button';
 import { LogOut, Crown } from 'lucide-react';
+
 export const Header = () => {
   const {
     user,
     logout
   } = useAuth();
+
   return <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-10">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-3">
@@ -17,7 +20,15 @@ export const Header = () => {
         </div>
         
         <div className="flex items-center space-x-4">
-          
+          <Button
+            onClick={logout}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <LogOut size={16} />
+            Sign Out
+          </Button>
         </div>
       </div>
     </header>;
