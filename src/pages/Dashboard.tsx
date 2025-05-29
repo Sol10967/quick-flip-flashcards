@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { Flashcard } from '../types/flashcard';
 import { useAuth } from '../hooks/useAuth';
@@ -21,6 +22,31 @@ export const Dashboard = () => {
     const now = new Date();
     return now.toISOString().split('T')[0]; // Returns YYYY-MM-DD in GMT
   };
+
+  useEffect(() => {
+    // Check URL parameters for payment status
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    
+    if (paymentStatus === 'success') {
+      toast({
+        title: "Payment successful!",
+        description: "Your subscription has been activated. Refreshing your account status...",
+      });
+      // Clear the URL parameter
+      window.history.replaceState({}, document.title, window.location.pathname);
+      // Refresh subscription status
+      checkSubscription();
+    } else if (paymentStatus === 'cancelled') {
+      toast({
+        title: "Payment cancelled",
+        description: "Your subscription was not activated. You can try again anytime.",
+        variant: "destructive"
+      });
+      // Clear the URL parameter
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [checkSubscription]);
 
   useEffect(() => {
     if (user) {

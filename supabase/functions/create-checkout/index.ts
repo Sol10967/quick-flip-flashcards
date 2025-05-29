@@ -48,6 +48,7 @@ serve(async (req) => {
       logStep("No existing customer found");
     }
 
+    const origin = req.headers.get("origin") || "http://localhost:3000";
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -66,8 +67,8 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
-      success_url: `${req.headers.get("origin")}/?payment=success`,
-      cancel_url: `${req.headers.get("origin")}/?payment=cancelled`,
+      success_url: `${origin}/?payment=success`,
+      cancel_url: `${origin}/?payment=cancelled`,
     });
 
     logStep("Checkout session created", { sessionId: session.id });
