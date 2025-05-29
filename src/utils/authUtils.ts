@@ -164,6 +164,7 @@ export const performUpgrade = async (): Promise<boolean> => {
 
     if (data?.url) {
       console.log('Redirecting to checkout URL:', data.url);
+      // Immediately redirect to Stripe checkout
       window.location.href = data.url;
       return true;
     } else {
