@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Flashcard } from '../types/flashcard';
 import { useAuth } from '../hooks/useAuth';
@@ -22,7 +21,7 @@ export const Dashboard = () => {
       const userCards = JSON.parse(localStorage.getItem(`cards_${user.id}`) || '[]');
       setCards(userCards);
       
-      // Check daily limit
+      // Check daily count
       const today = new Date().toDateString();
       if (user.lastCardCreationDate === today) {
         setCardsCreatedToday(user.cardsCreatedToday);
@@ -47,16 +46,6 @@ export const Dashboard = () => {
     if (!user) return false;
 
     const today = new Date().toDateString();
-    
-    // Check if user can create more cards
-    if (!user.isPremium && cardsCreatedToday >= 5) {
-      toast({
-        title: "Daily limit reached",
-        description: "Upgrade to Premium for unlimited cards!",
-        variant: "destructive"
-      });
-      return false;
-    }
 
     const newCard: Flashcard = {
       id: Date.now().toString(),
@@ -90,7 +79,7 @@ export const Dashboard = () => {
     return true;
   };
 
-  const canCreateCard = user?.isPremium || cardsCreatedToday < 5;
+  const canCreateCard = true; // Allow unlimited card creation for all users
   const showUpgradePrompt = !user?.isPremium && cards.length >= 5;
 
   const handleUpgrade = () => {
