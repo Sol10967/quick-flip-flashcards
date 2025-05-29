@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from 'react';
 import { Flashcard } from '../types/flashcard';
 import { FlashcardDisplay } from './FlashcardDisplay';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { CreditCard, Minimize, ChevronLeft, ChevronRight, Maximize } from 'lucide-react';
+import { useIsMobile } from '../hooks/use-mobile';
 
 interface FlashbankProps {
   cards: Flashcard[];
@@ -22,6 +22,7 @@ export const Flashbank = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const isMobile = useIsMobile();
 
   // Adjust current index if it's out of bounds after deletion
   useEffect(() => {
@@ -29,6 +30,27 @@ export const Flashbank = ({
       setCurrentIndex(cards.length - 1);
     }
   }, [cards.length, currentIndex]);
+
+  // Handle viewport height on mobile
+  useEffect(() => {
+    if (isFullscreen && isMobile) {
+      // Set viewport height to actual screen height on mobile
+      const setVH = () => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      };
+      
+      setVH();
+      window.addEventListener('resize', setVH);
+      window.addEventListener('orientationchange', setVH);
+      
+      return () => {
+        window.removeEventListener('resize', setVH);
+        window.removeEventListener('orientationchange', setVH);
+        document.documentElement.style.removeProperty('--vh');
+      };
+    }
+  }, [isFullscreen, isMobile]);
 
   if (cards.length === 0) {
     return (
@@ -99,48 +121,61 @@ export const Flashbank = ({
   if (isFullscreen) {
     return (
       <div 
-        className="fixed inset-0 z-50 flex flex-col" 
+        className="fixed inset-0 z-50 flex flex-col"
         style={{
           backgroundImage: 'url(/lovable-uploads/bb37e6bf-2b30-4799-b39f-13ac83221e6e.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
+          height: isMobile ? 'calc(var(--vh, 1vh) * 100)' : '100vh'
         }} 
         onKeyDown={handleKeyDown} 
         tabIndex={0}
       >
-        {/* Exit button */}
-        <div className="absolute top-4 right-4">
-          <Button onClick={toggleFullscreen} variant="outline" size="sm" className="bg-white/90 hover:bg-white font-space">
-            <Minimize size={16} />
-            Exit Fullscreen
-          </Button>
-        </div>
-        
-        {/* Card counter */}
-        <div className="flex-shrink-0 text-center pt-16 pb-8">
-          <p className="text-white text-2xl font-bold font-space drop-shadow-lg">
-            Card {currentIndex + 1} of {cards.length}
-          </p>
+        {/* Top section with exit button and card counter */}
+        <div className={`flex-shrink-0 flex ${isMobile ? 'flex-col' : 'flex-row'} justify-between items-center p-4 ${isMobile ? 'pt-safe-top' : ''}`}>
+          <div className={`${isMobile ? 'order-2 mt-2' : 'order-1'}`}>
+            <p className={`text-white font-bold font-space drop-shadow-lg ${isMobile ? 'text-lg' : 'text-2xl'}`}>
+              Card {currentIndex + 1} of {cards.length}
+            </p>
+          </div>
+          <div className={`${isMobile ? 'order-1 self-end' : 'order-2'}`}>
+            <Button onClick={toggleFullscreen} variant="outline" size="sm" className="bg-white/90 hover:bg-white font-space">
+              <Minimize size={16} />
+              {isMobile ? '' : 'Exit Fullscreen'}
+            </Button>
+          </div>
         </div>
         
         {/* Centered flashcard */}
-        <div className="flex-1 flex items-center justify-center px-8">
+        <div className="flex-1 flex items-center justify-center px-4 min-h-0">
           <div className={`transition-all duration-300 ${isAnimating ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
-            <div className="transform scale-[2]">
+            <div className={`${isMobile ? 'scale-100' : 'transform scale-[2]'}`}>
               <FlashcardDisplay card={cards[currentIndex]} onDelete={handleDeleteCard} />
             </div>
           </div>
         </div>
         
         {/* Navigation buttons */}
-        <div className="flex-shrink-0 flex justify-center items-center space-x-8 pb-16">
-          <Button onClick={handlePrevious} size="lg" variant="outline" className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 border-2" disabled={cards.length <= 1 || isAnimating}>
-            <ChevronLeft size={24} />
+        <div className={`flex-shrink-0 flex justify-center items-center space-x-8 ${isMobile ? 'pb-safe-bottom pb-4' : 'pb-16'}`}>
+          <Button 
+            onClick={handlePrevious} 
+            size={isMobile ? "default" : "lg"} 
+            variant="outline" 
+            className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 border-2`} 
+            disabled={cards.length <= 1 || isAnimating}
+          >
+            <ChevronLeft size={isMobile ? 20 : 24} />
           </Button>
           
-          <Button onClick={handleNext} size="lg" variant="outline" className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 border-2" disabled={cards.length <= 1 || isAnimating}>
-            <ChevronRight size={24} />
+          <Button 
+            onClick={handleNext} 
+            size={isMobile ? "default" : "lg"} 
+            variant="outline" 
+            className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 border-2`} 
+            disabled={cards.length <= 1 || isAnimating}
+          >
+            <ChevronRight size={isMobile ? 20 : 24} />
           </Button>
         </div>
       </div>
