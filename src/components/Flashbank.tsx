@@ -15,6 +15,7 @@ interface FlashbankProps {
 export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   if (cards.length === 0) {
     return (
@@ -28,11 +29,21 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
   }
 
   const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : cards.length - 1));
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setTimeout(() => {
+      setCurrentIndex((prev) => (prev > 0 ? prev - 1 : cards.length - 1));
+      setIsAnimating(false);
+    }, 150);
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev < cards.length - 1 ? prev + 1 : 0));
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setTimeout(() => {
+      setCurrentIndex((prev) => (prev < cards.length - 1 ? prev + 1 : 0));
+      setIsAnimating(false);
+    }, 150);
   };
 
   const toggleFullscreen = () => {
@@ -73,13 +84,15 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
             </p>
           </div>
           
-          <FlashcardDisplay card={cards[currentIndex]} />
+          <div className={`transition-all duration-300 ${isAnimating ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
+            <FlashcardDisplay card={cards[currentIndex]} />
+          </div>
           
           <div className="flex items-center space-x-6 mt-8">
             <button
               onClick={handlePrevious}
               className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 overflow-hidden"
-              disabled={cards.length <= 1}
+              disabled={cards.length <= 1 || isAnimating}
             >
               <img 
                 src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
@@ -91,7 +104,7 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
             <button
               onClick={handleNext}
               className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 overflow-hidden"
-              disabled={cards.length <= 1}
+              disabled={cards.length <= 1 || isAnimating}
             >
               <img 
                 src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
@@ -139,13 +152,15 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
         </CardHeader>
         
         <CardContent className="flex flex-col items-center space-y-6">
-          <FlashcardDisplay card={cards[currentIndex]} />
+          <div className={`transition-all duration-300 ${isAnimating ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
+            <FlashcardDisplay card={cards[currentIndex]} />
+          </div>
           
           <div className="flex items-center space-x-4">
             <button
               onClick={handlePrevious}
               className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md overflow-hidden"
-              disabled={cards.length <= 1}
+              disabled={cards.length <= 1 || isAnimating}
             >
               <img 
                 src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
@@ -157,7 +172,7 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
             <button
               onClick={handleNext}
               className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md overflow-hidden"
-              disabled={cards.length <= 1}
+              disabled={cards.length <= 1 || isAnimating}
             >
               <img 
                 src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 

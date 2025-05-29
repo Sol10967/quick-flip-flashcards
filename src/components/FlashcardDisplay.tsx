@@ -71,21 +71,27 @@ export const FlashcardDisplay = ({
           borderRadius: '12px'
         }}>
           {/* Front Side */}
-          <div className="absolute inset-0 flex items-center justify-center p-6 rounded-lg bg-white border-2 border-gray-200" style={{
+          <div className="absolute inset-0 flex flex-col rounded-lg bg-white border-2 border-gray-200" style={{
             backfaceVisibility: 'hidden',
             transform: 'rotateY(0deg)'
           }}>
-            <div className="text-center">
+            <div className="text-center py-2 border-b border-gray-200">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide font-space">Front</span>
+            </div>
+            <div className="flex-1 flex items-center justify-center p-6">
               <p className="text-lg font-medium text-gray-800 break-words font-space">{card.front}</p>
             </div>
           </div>
 
           {/* Back Side */}
-          <div className="absolute inset-0 flex items-center justify-center p-6 rounded-lg bg-gray-50 border-2 border-gray-200" style={{
+          <div className="absolute inset-0 flex flex-col rounded-lg bg-gray-50 border-2 border-gray-200" style={{
             backfaceVisibility: 'hidden',
             transform: 'rotateY(180deg)'
           }}>
-            <div className="text-center">
+            <div className="text-center py-2 border-b border-gray-200">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide font-space">Back</span>
+            </div>
+            <div className="flex-1 flex items-center justify-center p-6">
               <p className="text-lg text-gray-800 break-words font-space">{card.back}</p>
             </div>
           </div>
