@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Card, CardContent } from './ui/card';
 import { PlusCircle } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
 interface FlashcardCreatorProps {
   onCreateCard: (front: string, back: string) => boolean;
@@ -13,6 +14,7 @@ interface FlashcardCreatorProps {
 }
 
 export const FlashcardCreator = ({ onCreateCard, canCreateCard, cardsCreatedToday }: FlashcardCreatorProps) => {
+  const { user } = useAuth();
   const [front, setFront] = useState('');
   const [back, setBack] = useState('');
 
@@ -40,6 +42,8 @@ export const FlashcardCreator = ({ onCreateCard, canCreateCard, cardsCreatedToda
     }
   };
 
+  const displayLimit = user?.isPremium ? '∞' : '5';
+
   return (
     <div className="w-full max-w-2xl mx-auto">
       <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
@@ -47,7 +51,7 @@ export const FlashcardCreator = ({ onCreateCard, canCreateCard, cardsCreatedToda
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-gray-800 mb-2 font-space">Create Your Flashcard</h2>
-              <p className="text-gray-600 font-space">Cards created today: {cardsCreatedToday}/5</p>
+              <p className="text-gray-600 font-space">Cards created today: {cardsCreatedToday}/{displayLimit}</p>
             </div>
             
             <div className="space-y-4">
