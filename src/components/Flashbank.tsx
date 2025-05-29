@@ -4,7 +4,7 @@ import { Flashcard } from '../types/flashcard';
 import { FlashcardDisplay } from './FlashcardDisplay';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { ChevronLeft, ChevronRight, CreditCard, Maximize, Minimize } from 'lucide-react';
+import { CreditCard, Maximize, Minimize } from 'lucide-react';
 
 interface FlashbankProps {
   cards: Flashcard[];
@@ -76,25 +76,29 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
           <FlashcardDisplay card={cards[currentIndex]} />
           
           <div className="flex items-center space-x-6 mt-8">
-            <Button
+            <button
               onClick={handlePrevious}
-              variant="outline"
-              className="flex items-center gap-2 bg-white/90 hover:bg-white"
+              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50"
               disabled={cards.length <= 1}
             >
-              <ChevronLeft size={20} />
-              Back
-            </Button>
+              <img 
+                src="/lovable-uploads/f526d691-7236-45bd-a746-9f473f6d79d4.png" 
+                alt="Previous" 
+                className="w-full h-full object-contain"
+              />
+            </button>
             
-            <Button
+            <button
               onClick={handleNext}
-              variant="outline"
-              className="flex items-center gap-2 bg-white/90 hover:bg-white"
+              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50"
               disabled={cards.length <= 1}
             >
-              Next
-              <ChevronRight size={20} />
-            </Button>
+              <img 
+                src="/lovable-uploads/22e4fec8-a57b-4308-8273-c1606857d6d9.png" 
+                alt="Next" 
+                className="w-full h-full object-contain"
+              />
+            </button>
           </div>
           
           <p className="text-white/70 text-sm mt-4">
@@ -137,25 +141,29 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
           <FlashcardDisplay card={cards[currentIndex]} />
           
           <div className="flex items-center space-x-4">
-            <Button
+            <button
               onClick={handlePrevious}
-              variant="outline"
-              className="flex items-center gap-2"
+              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md"
               disabled={cards.length <= 1}
             >
-              <ChevronLeft size={20} />
-              Back
-            </Button>
+              <img 
+                src="/lovable-uploads/f526d691-7236-45bd-a746-9f473f6d79d4.png" 
+                alt="Previous" 
+                className="w-full h-full object-contain"
+              />
+            </button>
             
-            <Button
+            <button
               onClick={handleNext}
-              variant="outline"
-              className="flex items-center gap-2"
+              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md"
               disabled={cards.length <= 1}
             >
-              Next
-              <ChevronRight size={20} />
-            </Button>
+              <img 
+                src="/lovable-uploads/22e4fec8-a57b-4308-8273-c1606857d6d9.png" 
+                alt="Next" 
+                className="w-full h-full object-contain"
+              />
+            </button>
           </div>
         </CardContent>
       </Card>
