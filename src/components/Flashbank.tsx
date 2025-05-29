@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Flashcard } from '../types/flashcard';
 import { FlashcardDisplay } from './FlashcardDisplay';
@@ -89,8 +90,10 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
             </p>
           </div>
           
-          <div className={`transition-all duration-300 ${isAnimating ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
-            <FlashcardDisplay card={cards[currentIndex]} />
+          <div className={`transition-all duration-300 w-full max-w-4xl ${isAnimating ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
+            <div className="transform scale-150">
+              <FlashcardDisplay card={cards[currentIndex]} />
+            </div>
           </div>
           
           <div className="flex items-center space-x-6 mt-8">

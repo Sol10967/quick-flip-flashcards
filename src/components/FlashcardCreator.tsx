@@ -43,8 +43,8 @@ export const FlashcardCreator = ({ onCreateCard, canCreateCard, cardsCreatedToda
   };
 
   const displayLimit = user?.isPremium ? '∞' : '5';
-  const frontLimit = user?.isPremium ? '∞' : '80';
-  const backLimit = user?.isPremium ? '∞' : '150';
+  const frontLimit = user?.isPremium ? '∞' : '20';
+  const backLimit = user?.isPremium ? '∞' : '50';
 
   return (
     <div className="w-full max-w-2xl mx-auto">
@@ -67,7 +67,7 @@ export const FlashcardCreator = ({ onCreateCard, canCreateCard, cardsCreatedToda
                   onKeyPress={e => handleKeyPress(e, 'front')} 
                   placeholder="Enter your question or topic..." 
                   className="min-h-[80px] resize-none border-gray-200 focus:border-indigo-400 focus:ring-indigo-400 font-space" 
-                  maxLength={user?.isPremium ? undefined : 80} 
+                  maxLength={user?.isPremium ? undefined : 20} 
                 />
               </div>
               
@@ -82,7 +82,7 @@ export const FlashcardCreator = ({ onCreateCard, canCreateCard, cardsCreatedToda
                   onKeyPress={e => handleKeyPress(e, 'back')} 
                   placeholder="Enter your answer or information..." 
                   className="min-h-[80px] resize-none border-gray-200 focus:border-indigo-400 focus:ring-indigo-400 font-space" 
-                  maxLength={user?.isPremium ? undefined : 150} 
+                  maxLength={user?.isPremium ? undefined : 50} 
                 />
               </div>
             </div>
