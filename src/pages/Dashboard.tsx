@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { Flashcard } from '../types/flashcard';
 import { useAuth } from '../hooks/useAuth';
@@ -118,6 +119,14 @@ export const Dashboard = () => {
     return true;
   };
 
+  const handleDeleteCard = (cardId: string) => {
+    if (!user) return;
+
+    const updatedCards = cards.filter(card => card.id !== cardId);
+    setCards(updatedCards);
+    localStorage.setItem(`cards_${user.id}`, JSON.stringify(updatedCards));
+  };
+
   const canCreateCard = user?.isPremium || cardsCreatedToday < 5;
   const showUpgradePrompt = !user?.isPremium && cardsCreatedToday >= 5;
 
@@ -208,6 +217,7 @@ export const Dashboard = () => {
             cards={cards}
             onUpgrade={handleUpgrade}
             showUpgradePrompt={showUpgradePrompt}
+            onDeleteCard={handleDeleteCard}
           />
         </section>
       </main>
