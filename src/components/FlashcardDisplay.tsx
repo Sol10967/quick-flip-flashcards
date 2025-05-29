@@ -116,7 +116,7 @@ export const FlashcardDisplay = ({ card }: FlashcardDisplayProps) => {
         onClick={handleReadAloud} 
         variant="outline" 
         size="sm" 
-        className="absolute top-1 right-1/2 transform translate-x-1/2 p-2 bg-white/90 hover:bg-white border-gray-300"
+        className="absolute top-5 right-2 p-2 bg-white/90 hover:bg-white border-gray-300"
       >
         {isReading ? <VolumeX size={16} /> : <Volume2 size={16} />}
       </Button>
