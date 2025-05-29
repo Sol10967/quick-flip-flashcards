@@ -79,8 +79,8 @@ export const Dashboard = () => {
     return true;
   };
 
-  const canCreateCard = true; // Allow unlimited card creation for all users
-  const showUpgradePrompt = !user?.isPremium && cards.length >= 5;
+  const canCreateCard = user?.isPremium || cardsCreatedToday < 5;
+  const showUpgradePrompt = !user?.isPremium && cardsCreatedToday >= 5;
 
   const handleUpgrade = () => {
     upgradeUser();
