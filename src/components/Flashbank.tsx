@@ -78,25 +78,25 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
           <div className="flex items-center space-x-6 mt-8">
             <button
               onClick={handlePrevious}
-              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 overflow-hidden"
+              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 flex items-center justify-center"
               disabled={cards.length <= 1}
             >
               <img 
                 src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
                 alt="Previous" 
-                className="w-full h-full object-cover transform rotate-180"
+                className="w-8 h-8 object-contain transform rotate-180"
               />
             </button>
             
             <button
               onClick={handleNext}
-              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 overflow-hidden"
+              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 flex items-center justify-center"
               disabled={cards.length <= 1}
             >
               <img 
                 src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
                 alt="Next" 
-                className="w-full h-full object-cover"
+                className="w-8 h-8 object-contain"
               />
             </button>
           </div>
@@ -126,12 +126,12 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
             <div className="flex-1 flex justify-end">
               <button
                 onClick={toggleFullscreen}
-                className="w-10 h-10 rounded-md bg-white hover:bg-gray-50 transition-colors border border-gray-300 overflow-hidden"
+                className="w-10 h-10 rounded-md bg-white hover:bg-gray-50 transition-colors border border-gray-300 flex items-center justify-center"
               >
                 <img 
                   src="/lovable-uploads/e31e161f-f3cd-41b0-9cf0-fb333362e199.png" 
                   alt="Fullscreen" 
-                  className="w-full h-full object-cover"
+                  className="w-5 h-5 object-contain"
                 />
               </button>
             </div>
@@ -144,25 +144,25 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
           <div className="flex items-center space-x-4">
             <button
               onClick={handlePrevious}
-              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md overflow-hidden"
+              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md flex items-center justify-center"
               disabled={cards.length <= 1}
             >
               <img 
                 src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
                 alt="Previous" 
-                className="w-full h-full object-cover transform rotate-180"
+                className="w-8 h-8 object-contain transform rotate-180"
               />
             </button>
             
             <button
               onClick={handleNext}
-              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md overflow-hidden"
+              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md flex items-center justify-center"
               disabled={cards.length <= 1}
             >
               <img 
                 src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
                 alt="Next" 
-                className="w-full h-full object-cover"
+                className="w-8 h-8 object-contain"
               />
             </button>
           </div>
