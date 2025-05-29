@@ -43,6 +43,8 @@ export const FlashcardCreator = ({ onCreateCard, canCreateCard, cardsCreatedToda
   };
 
   const displayLimit = user?.isPremium ? '∞' : '5';
+  const frontLimit = user?.isPremium ? '∞' : '80';
+  const backLimit = user?.isPremium ? '∞' : '150';
 
   return (
     <div className="w-full max-w-2xl mx-auto">
@@ -57,7 +59,7 @@ export const FlashcardCreator = ({ onCreateCard, canCreateCard, cardsCreatedToda
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2 font-space">
-                  Front (Question/Topic) - {front.length}/80 characters
+                  Front (Question/Topic) - {front.length}/{frontLimit} characters
                 </label>
                 <Textarea 
                   value={front} 
@@ -65,13 +67,13 @@ export const FlashcardCreator = ({ onCreateCard, canCreateCard, cardsCreatedToda
                   onKeyPress={e => handleKeyPress(e, 'front')} 
                   placeholder="Enter your question or topic..." 
                   className="min-h-[80px] resize-none border-gray-200 focus:border-indigo-400 focus:ring-indigo-400 font-space" 
-                  maxLength={80} 
+                  maxLength={user?.isPremium ? undefined : 80} 
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2 font-space">
-                  Back (Answer/Information) - {back.length}/150 characters
+                  Back (Answer/Information) - {back.length}/{backLimit} characters
                 </label>
                 <Textarea 
                   data-field="back" 
@@ -80,7 +82,7 @@ export const FlashcardCreator = ({ onCreateCard, canCreateCard, cardsCreatedToda
                   onKeyPress={e => handleKeyPress(e, 'back')} 
                   placeholder="Enter your answer or information..." 
                   className="min-h-[80px] resize-none border-gray-200 focus:border-indigo-400 focus:ring-indigo-400 font-space" 
-                  maxLength={150} 
+                  maxLength={user?.isPremium ? undefined : 150} 
                 />
               </div>
             </div>
