@@ -1,9 +1,10 @@
+
 import { useState } from 'react';
 import { Flashcard } from '../types/flashcard';
 import { FlashcardDisplay } from './FlashcardDisplay';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { CreditCard, Minimize } from 'lucide-react';
+import { CreditCard, Minimize, ChevronLeft, ChevronRight, Maximize } from 'lucide-react';
 
 interface FlashbankProps {
   cards: Flashcard[];
@@ -88,29 +89,25 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
           </div>
           
           <div className="flex items-center space-x-6 mt-8">
-            <button
+            <Button
               onClick={handlePrevious}
-              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 flex items-center justify-center p-2"
+              size="lg"
+              variant="outline"
+              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 border-2"
               disabled={cards.length <= 1 || isAnimating}
             >
-              <img 
-                src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
-                alt="Previous" 
-                className="w-8 h-8 object-contain transform rotate-180"
-              />
-            </button>
+              <ChevronLeft size={24} />
+            </Button>
             
-            <button
+            <Button
               onClick={handleNext}
-              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 flex items-center justify-center p-2"
+              size="lg"
+              variant="outline"
+              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 border-2"
               disabled={cards.length <= 1 || isAnimating}
             >
-              <img 
-                src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
-                alt="Next" 
-                className="w-8 h-8 object-contain"
-              />
-            </button>
+              <ChevronRight size={24} />
+            </Button>
           </div>
           
           <p className="text-white/70 text-sm mt-4 font-space">
@@ -136,16 +133,14 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
               </p>
             </div>
             <div className="flex-1 flex justify-end">
-              <button
+              <Button
                 onClick={toggleFullscreen}
-                className="w-10 h-10 rounded-md bg-white hover:bg-gray-50 transition-colors border border-gray-300 flex items-center justify-center p-1"
+                variant="outline"
+                size="sm"
+                className="w-10 h-10 rounded-md bg-white hover:bg-gray-50 transition-colors border border-gray-300"
               >
-                <img 
-                  src="/lovable-uploads/e31e161f-f3cd-41b0-9cf0-fb333362e199.png" 
-                  alt="Fullscreen" 
-                  className="w-6 h-6 object-contain"
-                />
-              </button>
+                <Maximize size={16} />
+              </Button>
             </div>
           </div>
         </CardHeader>
@@ -156,29 +151,25 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
           </div>
           
           <div className="flex items-center space-x-4">
-            <button
+            <Button
               onClick={handlePrevious}
-              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md flex items-center justify-center p-2"
+              size="lg"
+              variant="outline"
+              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md border-2"
               disabled={cards.length <= 1 || isAnimating}
             >
-              <img 
-                src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
-                alt="Previous" 
-                className="w-8 h-8 object-contain transform rotate-180"
-              />
-            </button>
+              <ChevronLeft size={24} />
+            </Button>
             
-            <button
+            <Button
               onClick={handleNext}
-              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md flex items-center justify-center p-2"
+              size="lg"
+              variant="outline"
+              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md border-2"
               disabled={cards.length <= 1 || isAnimating}
             >
-              <img 
-                src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
-                alt="Next" 
-                className="w-8 h-8 object-contain"
-              />
-            </button>
+              <ChevronRight size={24} />
+            </Button>
           </div>
         </CardContent>
       </Card>
