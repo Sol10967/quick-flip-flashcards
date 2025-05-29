@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types/flashcard';
 import { supabase } from "@/integrations/supabase/client";
@@ -237,6 +238,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (data?.url) {
         console.log('Redirecting to checkout URL:', data.url);
+        // Immediately redirect to Stripe
         window.location.href = data.url;
       } else {
         console.error('No checkout URL received in response');
