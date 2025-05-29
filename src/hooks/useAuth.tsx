@@ -1,7 +1,7 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types/flashcard';
 import { supabase } from "@/integrations/supabase/client";
+import { useDeviceTracking } from './useDeviceTracking';
 
 interface AuthContextType {
   user: User | null;
@@ -16,6 +16,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const { registerDevice, updateDeviceActivity, cleanupInactiveDevices, logoutDevice } = useDeviceTracking();
 
   useEffect(() => {
     // Check for existing session
@@ -29,8 +30,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           cardsCreatedToday: 0,
           lastCardCreationDate: new Date().toDateString()
         };
-        setUser(userSession);
-        await checkSubscriptionStatus(session.user.id, session.user.email!);
+        
+        // Check device limit before setting user
+        const deviceAllowed = await registerDevice(session.user.id);
+        if (deviceAllowed) {
+          setUser(userSession);
+          await checkSubscriptionStatus(session.user.id, session.user.email!);
+          // Clean up old devices
+          await cleanupInactiveDevices(session.user.id);
+        } else {
+          // Force logout if device limit exceeded
+          await supabase.auth.signOut();
+        }
       }
     };
 
@@ -46,15 +57,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           cardsCreatedToday: 0,
           lastCardCreationDate: new Date().toDateString()
         };
-        setUser(userSession);
-        await checkSubscriptionStatus(session.user.id, session.user.email!);
+        
+        // Check device limit before setting user
+        const deviceAllowed = await registerDevice(session.user.id);
+        if (deviceAllowed) {
+          setUser(userSession);
+          await checkSubscriptionStatus(session.user.id, session.user.email!);
+        } else {
+          // Force logout if device limit exceeded
+          await supabase.auth.signOut();
+        }
       } else {
         setUser(null);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [registerDevice, cleanupInactiveDevices]);
+
+  // Update device activity every 5 minutes when user is active
+  useEffect(() => {
+    if (user) {
+      const interval = setInterval(() => {
+        updateDeviceActivity(user.id);
+      }, 5 * 60 * 1000); // 5 minutes
+
+      return () => clearInterval(interval);
+    }
+  }, [user, updateDeviceActivity]);
 
   const checkSubscriptionStatus = async (userId: string, email: string) => {
     try {
@@ -113,6 +143,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           cardsCreatedToday: 0,
           lastCardCreationDate: new Date().toDateString()
         };
+        
+        // Check device limit
+        const deviceAllowed = await registerDevice(data.user.id);
+        if (!deviceAllowed) {
+          await supabase.auth.signOut();
+          return false;
+        }
+        
         setUser(userSession);
         localStorage.setItem('currentUser', JSON.stringify(userSession));
         await checkSubscriptionStatus(data.user.id, data.user.email!);
@@ -146,6 +184,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           cardsCreatedToday: 0,
           lastCardCreationDate: new Date().toDateString()
         };
+        
+        // Register device for new user
+        await registerDevice(data.user.id);
         setUser(userSession);
         localStorage.setItem('currentUser', JSON.stringify(userSession));
         return true;
@@ -159,6 +200,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
+    if (user) {
+      await logoutDevice(user.id);
+    }
     await supabase.auth.signOut();
     setUser(null);
     localStorage.removeItem('currentUser');
