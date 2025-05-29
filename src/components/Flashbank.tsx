@@ -63,7 +63,13 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
   if (isFullscreen) {
     return (
       <div 
-        className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center"
+        className="fixed inset-0 z-50 flex items-center justify-center"
+        style={{
+          backgroundImage: 'url(https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3880&q=80)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
         onKeyDown={handleKeyDown}
         tabIndex={0}
       >
@@ -79,7 +85,7 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
           </Button>
           
           <div className="text-center mb-6">
-            <p className="text-white text-lg font-medium font-space">
+            <p className="text-white text-lg font-medium font-space drop-shadow-lg">
               Card {currentIndex + 1} of {cards.length}
             </p>
           </div>
@@ -110,7 +116,7 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
             </Button>
           </div>
           
-          <p className="text-white/70 text-sm mt-4 font-space">
+          <p className="text-white/70 text-sm mt-4 font-space drop-shadow-md">
             Use arrow keys to navigate or ESC to exit fullscreen
           </p>
         </div>
