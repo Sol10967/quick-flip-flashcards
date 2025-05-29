@@ -4,7 +4,7 @@ import { Flashcard } from '../types/flashcard';
 import { FlashcardDisplay } from './FlashcardDisplay';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { CreditCard, Maximize, Minimize } from 'lucide-react';
+import { CreditCard, Minimize } from 'lucide-react';
 
 interface FlashbankProps {
   cards: Flashcard[];
@@ -124,15 +124,16 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
               </p>
             </div>
             <div className="flex-1 flex justify-end">
-              <Button
+              <button
                 onClick={toggleFullscreen}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
+                className="w-10 h-10 rounded-md bg-white hover:bg-gray-50 transition-colors border border-gray-300 overflow-hidden"
               >
-                <Maximize size={16} />
-                Fullscreen
-              </Button>
+                <img 
+                  src="/lovable-uploads/e31e161f-f3cd-41b0-9cf0-fb333362e199.png" 
+                  alt="Fullscreen" 
+                  className="w-full h-full object-cover"
+                />
+              </button>
             </div>
           </div>
         </CardHeader>
