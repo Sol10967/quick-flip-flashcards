@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Flashcard } from '../types/flashcard';
 import { useAuth } from '../hooks/useAuth';
@@ -21,16 +22,18 @@ export const Dashboard = () => {
       const userCards = JSON.parse(localStorage.getItem(`cards_${user.id}`) || '[]');
       setCards(userCards);
       
-      // Check daily count
+      // Load the daily count from localStorage
       const today = new Date().toDateString();
-      if (user.lastCardCreationDate === today) {
-        setCardsCreatedToday(user.cardsCreatedToday);
-      } else {
-        setCardsCreatedToday(0);
-        // Reset daily count in localStorage
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        const userIndex = users.findIndex((u: any) => u.id === user.id);
-        if (userIndex !== -1) {
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const userIndex = users.findIndex((u: any) => u.id === user.id);
+      
+      if (userIndex !== -1) {
+        const userData = users[userIndex];
+        if (userData.lastCardCreationDate === today) {
+          setCardsCreatedToday(userData.cardsCreatedToday || 0);
+        } else {
+          // Reset daily count for new day
+          setCardsCreatedToday(0);
           users[userIndex].cardsCreatedToday = 0;
           users[userIndex].lastCardCreationDate = today;
           localStorage.setItem('users', JSON.stringify(users));
