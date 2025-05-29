@@ -2,10 +2,15 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types/flashcard';
 import { supabase } from "@/integrations/supabase/client";
-import { AuthContextType } from './auth/types';
-import { checkSubscriptionStatus, createCheckoutSession } from './auth/subscriptionService';
-import { signInWithPassword, signUpWithPassword, signOut } from './auth/authService';
-import { saveUserToStorage, removeUserFromStorage, loadUserFromStorage } from './auth/storageUtils';
+
+interface AuthContextType {
+  user: User | null;
+  login: (email: string, password: string) => Promise<boolean>;
+  signup: (email: string, password: string) => Promise<boolean>;
+  logout: () => void;
+  upgradeUser: () => void;
+  checkSubscription: () => Promise<void>;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -25,7 +30,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           lastCardCreationDate: new Date().toDateString()
         };
         setUser(userSession);
-        await handleSubscriptionCheck(session.user.id, session.user.email!);
+        await checkSubscriptionStatus(session.user.id, session.user.email!);
       }
     };
 
@@ -42,7 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           lastCardCreationDate: new Date().toDateString()
         };
         setUser(userSession);
-        await handleSubscriptionCheck(session.user.id, session.user.email!);
+        await checkSubscriptionStatus(session.user.id, session.user.email!);
       } else {
         setUser(null);
       }
@@ -51,63 +56,141 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleSubscriptionCheck = async (userId: string, email: string) => {
-    const isPremium = await checkSubscriptionStatus(userId, email);
-    
-    setUser(prev => prev ? {
-      ...prev,
-      isPremium
-    } : null);
+  const checkSubscriptionStatus = async (userId: string, email: string) => {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) return;
 
-    // Load local data
-    const savedUser = loadUserFromStorage();
-    if (savedUser) {
+      const { data, error } = await supabase.functions.invoke('check-subscription', {
+        headers: {
+          Authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+      });
+
+      if (error) {
+        console.error('Error checking subscription:', error);
+        return;
+      }
+
+      // Update user state with subscription status
       setUser(prev => prev ? {
         ...prev,
-        cardsCreatedToday: savedUser.cardsCreatedToday || 0,
-        lastCardCreationDate: savedUser.lastCardCreationDate || new Date().toDateString()
+        isPremium: data.subscribed || false
       } : null);
+
+      // Load local data
+      const savedUser = localStorage.getItem('currentUser');
+      if (savedUser) {
+        const userData = JSON.parse(savedUser);
+        setUser(prev => prev ? {
+          ...prev,
+          cardsCreatedToday: userData.cardsCreatedToday || 0,
+          lastCardCreationDate: userData.lastCardCreationDate || new Date().toDateString()
+        } : null);
+      }
+    } catch (error) {
+      console.error('Error checking subscription status:', error);
     }
   };
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    const { user: newUser, success } = await signInWithPassword(email, password);
-    
-    if (success && newUser) {
-      setUser(newUser);
-      saveUserToStorage(newUser);
-      await handleSubscriptionCheck(newUser.id, newUser.email);
-      return true;
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        console.error('Login error:', error);
+        return false;
+      }
+
+      if (data.user) {
+        const userSession = {
+          id: data.user.id,
+          email: data.user.email!,
+          isPremium: false,
+          cardsCreatedToday: 0,
+          lastCardCreationDate: new Date().toDateString()
+        };
+        setUser(userSession);
+        localStorage.setItem('currentUser', JSON.stringify(userSession));
+        await checkSubscriptionStatus(data.user.id, data.user.email!);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
     }
-    
-    return false;
   };
 
   const signup = async (email: string, password: string): Promise<boolean> => {
-    const { user: newUser, success } = await signUpWithPassword(email, password);
-    
-    if (success && newUser) {
-      setUser(newUser);
-      saveUserToStorage(newUser);
-      return true;
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) {
+        console.error('Signup error:', error);
+        return false;
+      }
+
+      if (data.user) {
+        const userSession = {
+          id: data.user.id,
+          email: data.user.email!,
+          isPremium: false,
+          cardsCreatedToday: 0,
+          lastCardCreationDate: new Date().toDateString()
+        };
+        setUser(userSession);
+        localStorage.setItem('currentUser', JSON.stringify(userSession));
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Signup error:', error);
+      return false;
     }
-    
-    return false;
   };
 
   const logout = async () => {
-    await signOut();
+    await supabase.auth.signOut();
     setUser(null);
-    removeUserFromStorage();
+    localStorage.removeItem('currentUser');
   };
 
   const upgradeUser = async () => {
-    await createCheckoutSession();
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) return;
+
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        headers: {
+          Authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+      });
+
+      if (error) {
+        console.error('Error creating checkout:', error);
+        return;
+      }
+
+      if (data.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Error upgrading user:', error);
+    }
   };
 
   const checkSubscription = async () => {
     if (user) {
-      await handleSubscriptionCheck(user.id, user.email);
+      await checkSubscriptionStatus(user.id, user.email);
     }
   };
 
