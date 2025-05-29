@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types/flashcard';
 import { supabase } from "@/integrations/supabase/client";
@@ -37,7 +38,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.email);
       if (session?.user) {
         const userSession = {
           id: session.user.id,
@@ -50,7 +50,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         await checkSubscriptionStatus(session.user.id, session.user.email!);
       } else {
         setUser(null);
-        localStorage.removeItem('currentUser');
       }
     });
 
@@ -160,19 +159,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
-    console.log('Logout initiated');
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error('Logout error:', error);
-      } else {
-        console.log('Logout successful');
-        setUser(null);
-        localStorage.removeItem('currentUser');
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+    await supabase.auth.signOut();
+    setUser(null);
+    localStorage.removeItem('currentUser');
   };
 
   const upgradeUser = async () => {

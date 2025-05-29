@@ -34,7 +34,7 @@ export const AuthForm = () => {
     <div 
       className="min-h-screen flex items-center justify-center p-4"
       style={{
-        backgroundImage: `url('/lovable-uploads/a7027674-c840-4e3c-8255-699607c88ed3.png')`,
+        backgroundImage: `url('/lovable-uploads/6db8f374-a28a-4e3c-9e7c-56f06fb81c27.png')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
