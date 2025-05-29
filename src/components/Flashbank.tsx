@@ -110,7 +110,8 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
       <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
         <CardHeader className="text-center pb-4">
           <div className="flex items-center justify-between">
-            <div className="flex-1">
+            <div className="flex-1"></div>
+            <div className="flex-1 text-center">
               <CardTitle className="text-2xl font-bold text-gray-800">
                 FlashBank
               </CardTitle>
@@ -118,15 +119,17 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
                 Card {currentIndex + 1} of {cards.length}
               </p>
             </div>
-            <Button
-              onClick={toggleFullscreen}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <Maximize size={16} />
-              Fullscreen
-            </Button>
+            <div className="flex-1 flex justify-end">
+              <Button
+                onClick={toggleFullscreen}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Maximize size={16} />
+                Fullscreen
+              </Button>
+            </div>
           </div>
         </CardHeader>
         
