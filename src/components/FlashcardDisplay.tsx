@@ -56,23 +56,6 @@ export const FlashcardDisplay = ({ card }: FlashcardDisplayProps) => {
     }
   };
 
-  // Function to check if text is too long and needs vertical display
-  const isTextTooLong = (text: string) => text.length > 100;
-
-  // Function to format text for display
-  const formatText = (text: string) => {
-    if (isTextTooLong(text)) {
-      // Split into words and display vertically
-      const words = text.split(' ');
-      return words.map((word, index) => (
-        <div key={index} className="text-center leading-tight">
-          {word}
-        </div>
-      ));
-    }
-    return text;
-  };
-
   return (
     <div className="relative">
       <div className="flashcard-container cursor-pointer" onClick={handleFlip} style={{ perspective: '1000px' }}>
@@ -98,8 +81,8 @@ export const FlashcardDisplay = ({ card }: FlashcardDisplayProps) => {
               <span className="text-xs font-semibold uppercase tracking-wide font-space text-slate-950">Front</span>
             </div>
             <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
-              <div className={`font-medium text-gray-800 font-space text-center ${isTextTooLong(card.front) ? 'text-sm max-h-full overflow-y-auto' : 'text-lg'}`}>
-                {formatText(card.front)}
+              <div className="font-medium text-gray-800 font-space text-center text-lg break-words hyphens-auto leading-relaxed max-w-full">
+                {card.front}
               </div>
             </div>
           </div>
@@ -116,8 +99,8 @@ export const FlashcardDisplay = ({ card }: FlashcardDisplayProps) => {
               <span className="text-xs font-semibold uppercase tracking-wide font-space text-slate-950">Back</span>
             </div>
             <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
-              <div className={`text-gray-800 font-space text-center ${isTextTooLong(card.back) ? 'text-sm max-h-full overflow-y-auto' : 'text-lg'}`}>
-                {formatText(card.back)}
+              <div className="text-gray-800 font-space text-center text-lg break-words hyphens-auto leading-relaxed max-w-full">
+                {card.back}
               </div>
             </div>
           </div>
