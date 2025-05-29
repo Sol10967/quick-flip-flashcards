@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { Flashcard } from '../types/flashcard';
 import { useAuth } from '../hooks/useAuth';
@@ -9,6 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CreditCard } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from "@/integrations/supabase/client";
+import { updateUserData } from '../utils/authUtils';
 
 export const Dashboard = () => {
   const { user, upgradeUser, checkSubscription } = useAuth();
@@ -49,45 +51,26 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (user) {
-      // Load user's cards
+      console.log('Loading cards for user:', user.id);
+      
+      // Load user's cards - use the authenticated user's ID
       const userCards = JSON.parse(localStorage.getItem(`cards_${user.id}`) || '[]');
+      console.log('Found cards for user:', userCards.length);
       setCards(userCards);
       
-      // Load and check daily count using GMT date
-      const todayGMT = getCurrentGMTDateString();
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const userIndex = users.findIndex((u: any) => u.id === user.id);
+      // Set cards created today from user object
+      setCardsCreatedToday(user.cardsCreatedToday || 0);
       
-      if (userIndex !== -1) {
-        const userData = users[userIndex];
-        if (userData.lastCardCreationDate === todayGMT) {
-          // Same day - keep existing count
-          setCardsCreatedToday(userData.cardsCreatedToday || 0);
-        } else {
-          // New day - reset count to 0
-          setCardsCreatedToday(0);
-          users[userIndex].cardsCreatedToday = 0;
-          users[userIndex].lastCardCreationDate = todayGMT;
-          localStorage.setItem('users', JSON.stringify(users));
-        }
-      } else {
-        // New user - initialize with today's GMT date
-        const newUser = {
-          ...user,
-          cardsCreatedToday: 0,
-          lastCardCreationDate: todayGMT
-        };
-        users.push(newUser);
-        localStorage.setItem('users', JSON.stringify(users));
-      }
-
       // Check subscription status when dashboard loads
       checkSubscription();
     }
   }, [user, checkSubscription]);
 
   const handleCreateCard = (front: string, back: string): boolean => {
-    if (!user) return false;
+    if (!user) {
+      console.error('No user found when creating card');
+      return false;
+    }
 
     // Check if user can create more cards
     if (!user.isPremium && cardsCreatedToday >= 5) {
@@ -110,20 +93,20 @@ export const Dashboard = () => {
 
     const updatedCards = [...cards, newCard];
     setCards(updatedCards);
+    
+    // Store cards with the authenticated user's ID
     localStorage.setItem(`cards_${user.id}`, JSON.stringify(updatedCards));
+    console.log('Saved cards for user:', user.id, 'Total cards:', updatedCards.length);
 
     // Update daily count
     const newCount = cardsCreatedToday + 1;
     setCardsCreatedToday(newCount);
 
-    // Update user's daily count in localStorage with GMT date
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const userIndex = users.findIndex((u: any) => u.id === user.id);
-    if (userIndex !== -1) {
-      users[userIndex].cardsCreatedToday = newCount;
-      users[userIndex].lastCardCreationDate = todayGMT;
-      localStorage.setItem('users', JSON.stringify(users));
-    }
+    // Update user data in localStorage and auth context
+    const updatedUser = updateUserData({
+      cardsCreatedToday: newCount,
+      lastCardCreationDate: todayGMT
+    });
 
     // Auto-scroll to upgrade prompt when hitting the limit
     if (!user?.isPremium && newCount >= 5) {
@@ -149,6 +132,7 @@ export const Dashboard = () => {
     const updatedCards = cards.filter(card => card.id !== cardId);
     setCards(updatedCards);
     localStorage.setItem(`cards_${user.id}`, JSON.stringify(updatedCards));
+    console.log('Deleted card for user:', user.id, 'Remaining cards:', updatedCards.length);
 
     toast({
       title: "Flashcard deleted",
@@ -210,6 +194,10 @@ export const Dashboard = () => {
       });
     }
   };
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div 

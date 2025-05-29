@@ -9,7 +9,8 @@ import {
   performLogin, 
   performSignup, 
   performLogout, 
-  performUpgrade 
+  performUpgrade,
+  updateUserData
 } from '../utils/authUtils';
 import { useContext } from 'react';
 
@@ -18,19 +19,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isUpgrading, setIsUpgrading] = useState(false);
 
   useEffect(() => {
-    // Check for existing session
+    // Check for existing session first
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        const userSession = {
-          id: session.user.id,
-          email: session.user.email!,
-          isPremium: false,
-          cardsCreatedToday: 0,
-          lastCardCreationDate: new Date().toDateString()
-        };
-        setUser(userSession);
-        await updateSubscriptionStatus(session.user.id, session.user.email!);
+        console.log('Found existing session for user:', session.user.id);
+        await handleAuthenticatedUser(session.user.id, session.user.email!);
+      } else {
+        // Check localStorage for current user (fallback)
+        const savedUser = localStorage.getItem('currentUser');
+        if (savedUser) {
+          try {
+            const userData = JSON.parse(savedUser);
+            setUser(userData);
+          } catch (error) {
+            console.error('Error parsing saved user data:', error);
+            localStorage.removeItem('currentUser');
+          }
+        }
       }
     };
 
@@ -38,44 +44,65 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.id);
+      
       if (session?.user) {
-        const userSession = {
-          id: session.user.id,
-          email: session.user.email!,
-          isPremium: false,
-          cardsCreatedToday: 0,
-          lastCardCreationDate: new Date().toDateString()
-        };
-        setUser(userSession);
-        await updateSubscriptionStatus(session.user.id, session.user.email!);
+        await handleAuthenticatedUser(session.user.id, session.user.email!);
       } else {
         setUser(null);
+        localStorage.removeItem('currentUser');
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  const handleAuthenticatedUser = async (userId: string, email: string) => {
+    // Get existing user data from localStorage
+    const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+    const existingUser = existingUsers.find((u: any) => u.id === userId);
+    
+    const getCurrentGMTDateString = () => {
+      const now = new Date();
+      return now.toISOString().split('T')[0];
+    };
+    
+    const todayGMT = getCurrentGMTDateString();
+    let cardsCreatedToday = 0;
+    let lastCardCreationDate = todayGMT;
+    
+    if (existingUser) {
+      if (existingUser.lastCardCreationDate === todayGMT) {
+        cardsCreatedToday = existingUser.cardsCreatedToday || 0;
+      }
+      lastCardCreationDate = existingUser.lastCardCreationDate || todayGMT;
+    }
+
+    const userSession = {
+      id: userId,
+      email: email,
+      isPremium: false,
+      cardsCreatedToday,
+      lastCardCreationDate
+    };
+    
+    setUser(userSession);
+    localStorage.setItem('currentUser', JSON.stringify(userSession));
+    
+    // Update subscription status
+    await updateSubscriptionStatus(userId, email);
+  };
+
   const updateSubscriptionStatus = async (userId: string, email: string) => {
     const subscriptionData = await checkSubscriptionStatus(userId, email);
     
     if (subscriptionData) {
-      // Update user state with subscription status
-      setUser(prev => prev ? {
-        ...prev,
+      const updatedUser = updateUserData({
         isPremium: subscriptionData.subscribed || false
-      } : null);
-    }
-
-    // Load local data
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      const userData = JSON.parse(savedUser);
-      setUser(prev => prev ? {
-        ...prev,
-        cardsCreatedToday: userData.cardsCreatedToday || 0,
-        lastCardCreationDate: userData.lastCardCreationDate || new Date().toDateString()
-      } : null);
+      });
+      if (updatedUser) {
+        setUser(updatedUser);
+      }
     }
   };
 
@@ -114,7 +141,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setIsUpgrading(false);
     
     if (!success) {
-      // Error handling is done in performUpgrade
       return;
     }
   };

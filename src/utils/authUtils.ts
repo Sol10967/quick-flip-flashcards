@@ -26,6 +26,27 @@ export const checkSubscriptionStatus = async (userId: string, email: string) => 
   }
 };
 
+const syncUserDataToLocalStorage = (user: User) => {
+  // Store current user data
+  localStorage.setItem('currentUser', JSON.stringify(user));
+  
+  // Update users array for backward compatibility
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  const userIndex = users.findIndex((u: any) => u.id === user.id);
+  
+  if (userIndex !== -1) {
+    users[userIndex] = user;
+  } else {
+    users.push(user);
+  }
+  localStorage.setItem('users', JSON.stringify(users));
+};
+
+const getCurrentGMTDateString = () => {
+  const now = new Date();
+  return now.toISOString().split('T')[0]; // Returns YYYY-MM-DD in GMT
+};
+
 export const performLogin = async (email: string, password: string): Promise<{ success: boolean; user?: User }> => {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -39,14 +60,32 @@ export const performLogin = async (email: string, password: string): Promise<{ s
     }
 
     if (data.user) {
+      const todayGMT = getCurrentGMTDateString();
+      
+      // Get existing user data from localStorage or create new
+      const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+      const existingUser = existingUsers.find((u: any) => u.id === data.user.id);
+      
+      let cardsCreatedToday = 0;
+      let lastCardCreationDate = todayGMT;
+      
+      if (existingUser) {
+        // Check if it's the same day
+        if (existingUser.lastCardCreationDate === todayGMT) {
+          cardsCreatedToday = existingUser.cardsCreatedToday || 0;
+        }
+        lastCardCreationDate = existingUser.lastCardCreationDate || todayGMT;
+      }
+
       const userSession = {
         id: data.user.id,
         email: data.user.email!,
-        isPremium: false,
-        cardsCreatedToday: 0,
-        lastCardCreationDate: new Date().toDateString()
+        isPremium: false, // Will be updated by subscription check
+        cardsCreatedToday,
+        lastCardCreationDate
       };
-      localStorage.setItem('currentUser', JSON.stringify(userSession));
+      
+      syncUserDataToLocalStorage(userSession);
       return { success: true, user: userSession };
     }
 
@@ -70,14 +109,17 @@ export const performSignup = async (email: string, password: string): Promise<{ 
     }
 
     if (data.user) {
+      const todayGMT = getCurrentGMTDateString();
+      
       const userSession = {
         id: data.user.id,
         email: data.user.email!,
         isPremium: false,
         cardsCreatedToday: 0,
-        lastCardCreationDate: new Date().toDateString()
+        lastCardCreationDate: todayGMT
       };
-      localStorage.setItem('currentUser', JSON.stringify(userSession));
+      
+      syncUserDataToLocalStorage(userSession);
       return { success: true, user: userSession };
     }
 
@@ -185,4 +227,14 @@ export const performUpgrade = async (): Promise<boolean> => {
     });
     return false;
   }
+};
+
+export const updateUserData = (userData: Partial<User>) => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+  if (currentUser) {
+    const updatedUser = { ...currentUser, ...userData };
+    syncUserDataToLocalStorage(updatedUser);
+    return updatedUser;
+  }
+  return null;
 };
