@@ -216,32 +216,10 @@ export const Dashboard = () => {
           <Flashbank
             cards={cards}
             onUpgrade={handleUpgrade}
-            showUpgradePrompt={false}
+            showUpgradePrompt={showUpgradePrompt}
             onDeleteCard={handleDeleteCard}
           />
         </section>
-
-        {showUpgradePrompt && (
-          <section className="w-full max-w-2xl mx-auto">
-            <Card className="border-amber-200 bg-amber-50">
-              <CardContent className="p-6 text-center">
-                <CreditCard className="mx-auto mb-4 text-amber-600" size={48} />
-                <h3 className="text-xl font-bold text-amber-800 mb-2 font-space">
-                  Unlock Unlimited Flashcards!
-                </h3>
-                <p className="text-amber-700 mb-4 font-space">
-                  You've reached your daily limit of 5 cards. Upgrade to Premium for unlimited card creation and an infinite amount of characters!
-                </p>
-                <Button 
-                  onClick={handleUpgrade} 
-                  className="bg-amber-600 hover:bg-amber-700 text-white font-space"
-                >
-                  Upgrade for £10/month
-                </Button>
-              </CardContent>
-            </Card>
-          </section>
-        )}
       </main>
     </div>
   );
