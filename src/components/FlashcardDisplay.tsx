@@ -27,16 +27,30 @@ export const FlashcardDisplay = ({
       const text = isFlipped ? card.back : card.front;
       const utterance = new SpeechSynthesisUtterance(text);
 
-      // Set a cooler voice - try to find a more modern/engaging voice
+      // Set a female voice - prioritize female voices
       const voices = speechSynthesis.getVoices();
-      const coolVoice = voices.find(voice => voice.name.includes('Google') || voice.name.includes('Microsoft') || voice.name.includes('Samantha') || voice.name.includes('Alex') || voice.name.includes('Daniel')) || voices.find(voice => voice.lang.startsWith('en')) || voices[0];
-      if (coolVoice) {
-        utterance.voice = coolVoice;
+      const femaleVoice = voices.find(voice => 
+        voice.name.toLowerCase().includes('female') ||
+        voice.name.toLowerCase().includes('zira') ||
+        voice.name.toLowerCase().includes('hazel') ||
+        voice.name.toLowerCase().includes('susan') ||
+        voice.name.toLowerCase().includes('samantha') ||
+        voice.name.toLowerCase().includes('karen') ||
+        voice.name.toLowerCase().includes('moira') ||
+        voice.name.toLowerCase().includes('tessa') ||
+        voice.name.toLowerCase().includes('veena') ||
+        voice.name.toLowerCase().includes('fiona') ||
+        voice.name.toLowerCase().includes('kate') ||
+        voice.name.toLowerCase().includes('serena')
+      ) || voices.find(voice => voice.lang.startsWith('en')) || voices[0];
+      
+      if (femaleVoice) {
+        utterance.voice = femaleVoice;
       }
 
-      // Make it sound cooler with adjusted rate and pitch
+      // Make it sound pleasant with adjusted rate and pitch
       utterance.rate = 0.9; // Slightly slower for clarity
-      utterance.pitch = 0.8; // Lower pitch for a cooler tone
+      utterance.pitch = 1.1; // Higher pitch for a more feminine tone
 
       utterance.onend = () => setIsReading(false);
       speechSynthesis.speak(utterance);
@@ -62,7 +76,7 @@ export const FlashcardDisplay = ({
             transform: 'rotateY(0deg)'
           }}>
             <div className="text-center">
-              <p className="text-lg font-medium text-gray-800 break-words">{card.front}</p>
+              <p className="text-lg font-medium text-gray-800 break-words font-space">{card.front}</p>
             </div>
           </div>
 
@@ -72,7 +86,7 @@ export const FlashcardDisplay = ({
             transform: 'rotateY(180deg)'
           }}>
             <div className="text-center">
-              <p className="text-lg text-gray-800 break-words">{card.back}</p>
+              <p className="text-lg text-gray-800 break-words font-space">{card.back}</p>
             </div>
           </div>
         </div>

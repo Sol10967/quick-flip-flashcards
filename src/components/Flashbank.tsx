@@ -20,8 +20,8 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardContent className="p-8 text-center">
-          <p className="text-gray-500 text-lg">Your flashbank is empty</p>
-          <p className="text-gray-400 text-sm mt-2">Create your first flashcard above!</p>
+          <p className="text-gray-500 text-lg font-space">Your flashbank is empty</p>
+          <p className="text-gray-400 text-sm mt-2 font-space">Create your first flashcard above!</p>
         </CardContent>
       </Card>
     );
@@ -61,14 +61,14 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
             onClick={toggleFullscreen}
             variant="outline"
             size="sm"
-            className="absolute top-4 right-4 bg-white/90 hover:bg-white"
+            className="absolute top-4 right-4 bg-white/90 hover:bg-white font-space"
           >
             <Minimize size={16} />
             Exit Fullscreen
           </Button>
           
           <div className="text-center mb-6">
-            <p className="text-white text-lg font-medium">
+            <p className="text-white text-lg font-medium font-space">
               Card {currentIndex + 1} of {cards.length}
             </p>
           </div>
@@ -101,7 +101,7 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
             </button>
           </div>
           
-          <p className="text-white/70 text-sm mt-4">
+          <p className="text-white/70 text-sm mt-4 font-space">
             Use arrow keys to navigate or ESC to exit fullscreen
           </p>
         </div>
@@ -116,10 +116,10 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
           <div className="flex items-center justify-between">
             <div className="flex-1"></div>
             <div className="flex-1 text-center">
-              <CardTitle className="text-2xl font-bold text-gray-800">
+              <CardTitle className="text-2xl font-bold text-gray-800 font-space">
                 FlashBank
               </CardTitle>
-              <p className="text-gray-600">
+              <p className="text-gray-600 font-space">
                 Card {currentIndex + 1} of {cards.length}
               </p>
             </div>
@@ -173,15 +173,15 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
         <Card className="border-amber-200 bg-amber-50">
           <CardContent className="p-6 text-center">
             <CreditCard className="mx-auto mb-4 text-amber-600" size={48} />
-            <h3 className="text-xl font-bold text-amber-800 mb-2">
+            <h3 className="text-xl font-bold text-amber-800 mb-2 font-space">
               Unlock Unlimited Flashcards!
             </h3>
-            <p className="text-amber-700 mb-4">
+            <p className="text-amber-700 mb-4 font-space">
               You've reached your daily limit of 5 cards. Upgrade to Premium for unlimited card creation.
             </p>
             <Button
               onClick={onUpgrade}
-              className="bg-amber-600 hover:bg-amber-700 text-white"
+              className="bg-amber-600 hover:bg-amber-700 text-white font-space"
             >
               Upgrade for £10/month
             </Button>
