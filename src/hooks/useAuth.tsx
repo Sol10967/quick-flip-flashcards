@@ -1,6 +1,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types/flashcard';
+import { supabase } from "@/integrations/supabase/client";
 
 interface AuthContextType {
   user: User | null;
@@ -8,6 +9,7 @@ interface AuthContextType {
   signup: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   upgradeUser: () => void;
+  checkSubscription: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -16,87 +18,184 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Check for existing user session
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    // Check for existing session
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const userSession = {
+          id: session.user.id,
+          email: session.user.email!,
+          isPremium: false,
+          cardsCreatedToday: 0,
+          lastCardCreationDate: new Date().toDateString()
+        };
+        setUser(userSession);
+        await checkSubscriptionStatus(session.user.id, session.user.email!);
+      }
+    };
+
+    checkSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        const userSession = {
+          id: session.user.id,
+          email: session.user.email!,
+          isPremium: false,
+          cardsCreatedToday: 0,
+          lastCardCreationDate: new Date().toDateString()
+        };
+        setUser(userSession);
+        await checkSubscriptionStatus(session.user.id, session.user.email!);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // Simulate login - in real app this would be an API call
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const foundUser = users.find((u: any) => u.email === email && u.password === password);
-    
-    if (foundUser) {
-      const userSession = {
-        id: foundUser.id,
-        email: foundUser.email,
-        isPremium: foundUser.isPremium || false,
-        cardsCreatedToday: foundUser.cardsCreatedToday || 0,
-        lastCardCreationDate: foundUser.lastCardCreationDate || new Date().toDateString()
-      };
-      setUser(userSession);
-      localStorage.setItem('currentUser', JSON.stringify(userSession));
-      return true;
+  const checkSubscriptionStatus = async (userId: string, email: string) => {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) return;
+
+      const { data, error } = await supabase.functions.invoke('check-subscription', {
+        headers: {
+          Authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+      });
+
+      if (error) {
+        console.error('Error checking subscription:', error);
+        return;
+      }
+
+      // Update user state with subscription status
+      setUser(prev => prev ? {
+        ...prev,
+        isPremium: data.subscribed || false
+      } : null);
+
+      // Load local data
+      const savedUser = localStorage.getItem('currentUser');
+      if (savedUser) {
+        const userData = JSON.parse(savedUser);
+        setUser(prev => prev ? {
+          ...prev,
+          cardsCreatedToday: userData.cardsCreatedToday || 0,
+          lastCardCreationDate: userData.lastCardCreationDate || new Date().toDateString()
+        } : null);
+      }
+    } catch (error) {
+      console.error('Error checking subscription status:', error);
     }
-    return false;
+  };
+
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        console.error('Login error:', error);
+        return false;
+      }
+
+      if (data.user) {
+        const userSession = {
+          id: data.user.id,
+          email: data.user.email!,
+          isPremium: false,
+          cardsCreatedToday: 0,
+          lastCardCreationDate: new Date().toDateString()
+        };
+        setUser(userSession);
+        localStorage.setItem('currentUser', JSON.stringify(userSession));
+        await checkSubscriptionStatus(data.user.id, data.user.email!);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
+    }
   };
 
   const signup = async (email: string, password: string): Promise<boolean> => {
-    // Simulate signup
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const existingUser = users.find((u: any) => u.email === email);
-    
-    if (!existingUser) {
-      const newUser = {
-        id: Date.now().toString(),
+    try {
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        isPremium: false,
-        cardsCreatedToday: 0,
-        lastCardCreationDate: new Date().toDateString()
-      };
-      users.push(newUser);
-      localStorage.setItem('users', JSON.stringify(users));
-      
-      const userSession = {
-        id: newUser.id,
-        email: newUser.email,
-        isPremium: newUser.isPremium,
-        cardsCreatedToday: newUser.cardsCreatedToday,
-        lastCardCreationDate: newUser.lastCardCreationDate
-      };
-      setUser(userSession);
-      localStorage.setItem('currentUser', JSON.stringify(userSession));
-      return true;
+      });
+
+      if (error) {
+        console.error('Signup error:', error);
+        return false;
+      }
+
+      if (data.user) {
+        const userSession = {
+          id: data.user.id,
+          email: data.user.email!,
+          isPremium: false,
+          cardsCreatedToday: 0,
+          lastCardCreationDate: new Date().toDateString()
+        };
+        setUser(userSession);
+        localStorage.setItem('currentUser', JSON.stringify(userSession));
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Signup error:', error);
+      return false;
     }
-    return false;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
     localStorage.removeItem('currentUser');
   };
 
-  const upgradeUser = () => {
-    if (user) {
-      const updatedUser = { ...user, isPremium: true };
-      setUser(updatedUser);
-      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-      
-      // Update in users array
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const userIndex = users.findIndex((u: any) => u.id === user.id);
-      if (userIndex !== -1) {
-        users[userIndex].isPremium = true;
-        localStorage.setItem('users', JSON.stringify(users));
+  const upgradeUser = async () => {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) return;
+
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        headers: {
+          Authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+      });
+
+      if (error) {
+        console.error('Error creating checkout:', error);
+        return;
       }
+
+      if (data.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Error upgrading user:', error);
+    }
+  };
+
+  const checkSubscription = async () => {
+    if (user) {
+      await checkSubscriptionStatus(user.id, user.email);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, upgradeUser }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, upgradeUser, checkSubscription }}>
       {children}
     </AuthContext.Provider>
   );
