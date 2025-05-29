@@ -118,6 +118,19 @@ export const Dashboard = () => {
     return true;
   };
 
+  const handleDeleteCard = (cardId: string) => {
+    if (!user) return;
+
+    const updatedCards = cards.filter(card => card.id !== cardId);
+    setCards(updatedCards);
+    localStorage.setItem(`cards_${user.id}`, JSON.stringify(updatedCards));
+
+    toast({
+      title: "Flashcard deleted",
+      description: "The flashcard has been removed from your flashbank."
+    });
+  };
+
   const canCreateCard = user?.isPremium || cardsCreatedToday < 5;
   const showUpgradePrompt = !user?.isPremium && cardsCreatedToday >= 5;
 
@@ -208,6 +221,7 @@ export const Dashboard = () => {
             cards={cards}
             onUpgrade={handleUpgrade}
             showUpgradePrompt={showUpgradePrompt}
+            onDeleteCard={handleDeleteCard}
           />
         </section>
       </main>
