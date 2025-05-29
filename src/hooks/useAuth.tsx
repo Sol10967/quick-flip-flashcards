@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types/flashcard';
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +16,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isUpgrading, setIsUpgrading] = useState(false);
 
   useEffect(() => {
     // Check for existing session
@@ -190,7 +190,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const upgradeUser = async () => {
+    if (isUpgrading) {
+      console.log('Upgrade already in progress, ignoring duplicate call');
+      return;
+    }
+
     console.log('Upgrade button clicked - starting upgrade process');
+    setIsUpgrading(true);
     
     try {
       console.log('Getting current session...');
@@ -238,7 +244,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (data?.url) {
         console.log('Redirecting to checkout URL:', data.url);
-        // Immediately redirect to Stripe
         window.location.href = data.url;
       } else {
         console.error('No checkout URL received in response');
@@ -255,6 +260,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         description: "An unexpected error occurred. Please try again.",
         variant: "destructive"
       });
+    } finally {
+      setIsUpgrading(false);
     }
   };
 
