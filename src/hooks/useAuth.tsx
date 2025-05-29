@@ -159,16 +159,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
+    console.log('Logging out user...');
     await supabase.auth.signOut();
     setUser(null);
     localStorage.removeItem('currentUser');
+    // Force redirect to auth page
+    window.location.href = '/';
   };
 
   const upgradeUser = async () => {
     try {
+      console.log('Starting upgrade process...');
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) {
-        console.error('No session found');
+        console.error('No session found - user needs to be logged in');
         return;
       }
 
@@ -185,9 +189,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       console.log('Checkout response:', data);
-      if (data.url) {
+      if (data?.url) {
+        console.log('Redirecting to:', data.url);
         // Redirect to Stripe checkout in the same window
         window.location.href = data.url;
+      } else {
+        console.error('No checkout URL received');
       }
     } catch (error) {
       console.error('Error upgrading user:', error);
