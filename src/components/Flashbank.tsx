@@ -78,25 +78,25 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
           <div className="flex items-center space-x-6 mt-8">
             <button
               onClick={handlePrevious}
-              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 p-2"
+              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 overflow-hidden"
               disabled={cards.length <= 1}
             >
               <img 
                 src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
                 alt="Previous" 
-                className="w-full h-full object-contain transform rotate-180"
+                className="w-full h-full object-cover transform rotate-180"
               />
             </button>
             
             <button
               onClick={handleNext}
-              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 p-2"
+              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 overflow-hidden"
               disabled={cards.length <= 1}
             >
               <img 
                 src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
                 alt="Next" 
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
               />
             </button>
           </div>
@@ -143,25 +143,25 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
           <div className="flex items-center space-x-4">
             <button
               onClick={handlePrevious}
-              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md p-2"
+              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md overflow-hidden"
               disabled={cards.length <= 1}
             >
               <img 
                 src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
                 alt="Previous" 
-                className="w-full h-full object-contain transform rotate-180"
+                className="w-full h-full object-cover transform rotate-180"
               />
             </button>
             
             <button
               onClick={handleNext}
-              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md p-2"
+              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md overflow-hidden"
               disabled={cards.length <= 1}
             >
               <img 
                 src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
                 alt="Next" 
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
               />
             </button>
           </div>
