@@ -25,5 +25,24 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+    // Get a reference to your button using its unique class name
+    // We are using document.querySelector because it's a class, not an ID.
+    const upgradeButton = document.querySelector('button.button-inline-flex-items-center-justify-center-gap-2-whitespace-nowrap-rounded-md-red-600');
+
+    // Check if the button was found to prevent errors
+    if (upgradeButton) {
+        // Add a click event listener to the button
+        upgradeButton.addEventListener('click', function() {
+            // When clicked, open the Stripe Payment Link in a new tab/window
+            // REPLACE 'YOUR_STRIPE_PAYMENT_LINK_HERE' with the actual link you got from Stripe
+            window.open(https://buy.stripe.com/dRmfZi3P9cT4bnR7JX2Ji00, '_blank');
+        });
+    } else {
+        console.warn("Upgrade button not found in the DOM.");
+    }
+</script>
+</body>
+</html>
   </body>
 </html>
