@@ -1,5 +1,3 @@
-
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types/flashcard';
 import { supabase } from "@/integrations/supabase/client";
@@ -193,12 +191,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const upgradeUser = async () => {
     console.log('Upgrade button clicked - starting upgrade process');
     
-    // Show immediate feedback
-    toast({
-      title: "Getting payment ready...",
-      description: "Setting up your secure payment session."
-    });
-    
     try {
       console.log('Getting current session...');
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
@@ -245,19 +237,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (data?.url) {
         console.log('Redirecting to checkout URL:', data.url);
-        toast({
-          title: "Redirecting to payment...",
-          description: "Opening secure payment page in 2 seconds.",
-        });
-        
-        // Add a small delay to show the toast, then redirect
-        setTimeout(() => {
-          toast({
-            title: "Payment page opening...",
-            description: "You're being redirected to complete your purchase."
-          });
-          window.location.href = data.url;
-        }, 2000);
+        window.location.href = data.url;
       } else {
         console.error('No checkout URL received in response');
         toast({
@@ -296,4 +276,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
