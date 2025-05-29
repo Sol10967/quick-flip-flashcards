@@ -16,28 +16,44 @@ export const Dashboard = () => {
   const [cardsCreatedToday, setCardsCreatedToday] = useState(0);
   const upgradePromptRef = useRef<HTMLDivElement>(null);
 
+  // Get current GMT date string for consistent daily tracking
+  const getCurrentGMTDateString = () => {
+    const now = new Date();
+    return now.toISOString().split('T')[0]; // Returns YYYY-MM-DD in GMT
+  };
+
   useEffect(() => {
     if (user) {
       // Load user's cards
       const userCards = JSON.parse(localStorage.getItem(`cards_${user.id}`) || '[]');
       setCards(userCards);
       
-      // Load the daily count from localStorage
-      const today = new Date().toDateString();
+      // Load and check daily count using GMT date
+      const todayGMT = getCurrentGMTDateString();
       const users = JSON.parse(localStorage.getItem('users') || '[]');
       const userIndex = users.findIndex((u: any) => u.id === user.id);
       
       if (userIndex !== -1) {
         const userData = users[userIndex];
-        if (userData.lastCardCreationDate === today) {
+        if (userData.lastCardCreationDate === todayGMT) {
+          // Same day - keep existing count
           setCardsCreatedToday(userData.cardsCreatedToday || 0);
         } else {
-          // Reset daily count for new day
+          // New day - reset count to 0
           setCardsCreatedToday(0);
           users[userIndex].cardsCreatedToday = 0;
-          users[userIndex].lastCardCreationDate = today;
+          users[userIndex].lastCardCreationDate = todayGMT;
           localStorage.setItem('users', JSON.stringify(users));
         }
+      } else {
+        // New user - initialize with today's GMT date
+        const newUser = {
+          ...user,
+          cardsCreatedToday: 0,
+          lastCardCreationDate: todayGMT
+        };
+        users.push(newUser);
+        localStorage.setItem('users', JSON.stringify(users));
       }
 
       // Check subscription status when dashboard loads
@@ -48,7 +64,17 @@ export const Dashboard = () => {
   const handleCreateCard = (front: string, back: string): boolean => {
     if (!user) return false;
 
-    const today = new Date().toDateString();
+    // Check if user can create more cards
+    if (!user.isPremium && cardsCreatedToday >= 5) {
+      toast({
+        title: "Daily limit reached",
+        description: "You've reached your daily limit of 5 cards. Upgrade to Premium for unlimited card creation.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    const todayGMT = getCurrentGMTDateString();
 
     const newCard: Flashcard = {
       id: Date.now().toString(),
@@ -65,12 +91,12 @@ export const Dashboard = () => {
     const newCount = cardsCreatedToday + 1;
     setCardsCreatedToday(newCount);
 
-    // Update user's daily count in localStorage
+    // Update user's daily count in localStorage with GMT date
     const users = JSON.parse(localStorage.getItem('users') || '[]');
     const userIndex = users.findIndex((u: any) => u.id === user.id);
     if (userIndex !== -1) {
       users[userIndex].cardsCreatedToday = newCount;
-      users[userIndex].lastCardCreationDate = today;
+      users[userIndex].lastCardCreationDate = todayGMT;
       localStorage.setItem('users', JSON.stringify(users));
     }
 
