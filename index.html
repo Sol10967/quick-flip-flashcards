@@ -27,20 +27,63 @@
     <script type="module" src="/src/main.tsx"></script>
     <script>
     // Get a reference to your button using its unique class name
-    // We are using document.querySelector because it's a class, not an ID.
-    const upgradeButton = document.querySelector('button.button-inline-flex-items-center-justify-center-gap-2-whitespace-nowrap-rounded-md-red-600');
+   <script>
+    const TARGET_BUTTON_SELECTOR = 'button.button-inline-flex-items-center-justify-center-gap-2-whitespace-nowrap-rounded-md-red-600';
+    const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/fief173gMwTeat43210'; // Your actual Stripe link
 
-    // Check if the button was found to prevent errors
-    if (upgradeButton) {
-        // Add a click event listener to the button
-        upgradeButton.addEventListener('click', function() {
-            // When clicked, open the Stripe Payment Link in a new tab/window
-            // REPLACE 'YOUR_STRIPE_PAYMENT_LINK_HERE' with the actual link you got from Stripe
-            window.open(https://buy.stripe.com/dRmfZi3P9cT4bnR7JX2Ji00, '_blank');
-        });
-    } else {
-        console.warn("Upgrade button not found in the DOM.");
+    // Function to attempt to set up the button listener
+    function setupUpgradeButton() {
+        const upgradeButton = document.querySelector(TARGET_BUTTON_SELECTOR);
+
+        if (upgradeButton) {
+            // Button found! Set up the click listener.
+            upgradeButton.addEventListener('click', function() {
+                window.open(STRIPE_PAYMENT_LINK, '_blank');
+            });
+            console.log("Upgrade button found and listener attached!");
+
+            // If we found the button, we can stop observing
+            if (observer) {
+                observer.disconnect();
+                console.log("MutationObserver disconnected as button was found.");
+            }
+            return true; // Indicate button was found
+        }
+        return false; // Indicate button not yet found
     }
+
+    // --- Main Logic ---
+
+    let observer = null; // Declare observer outside so it can be disconnected
+
+    // First, try to set up the button immediately on DOMContentLoaded
+    // in case it's already there (fast load, or not dynamically added).
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!setupUpgradeButton()) {
+            // If the button wasn't found on DOMContentLoaded, start observing the body
+            // for changes (i.e., when the button gets added later by another script).
+            console.log("Button not found on DOMContentLoaded, starting MutationObserver...");
+            observer = new MutationObserver(function(mutationsList, observer) {
+                // Check if the button is now available after a DOM change
+                if (setupUpgradeButton()) {
+                    // setupUpgradeButton will disconnect the observer if successful
+                }
+            });
+
+            // Start observing the entire document body for child additions/removals
+            // and changes to their attributes.
+            observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+        }
+    });
+
+    // Fallback: If for some reason the above doesn't work, a delayed check.
+    // This is less reliable but can catch very late additions.
+    // However, MutationObserver should catch almost everything.
+    setTimeout(() => {
+        if (!document.querySelector(TARGET_BUTTON_SELECTOR)) {
+            console.warn("Upgrade button still not found after 10 seconds. Check selector or dynamic loading.");
+        }
+    }, 10000); // Check after 10 seconds, if not found by observer
 </script>
 </body>
 </html>
