@@ -1,21 +1,21 @@
+
 import { useState } from 'react';
 import { Flashcard } from '../types/flashcard';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Card, CardContent } from './ui/card';
 import { PlusCircle } from 'lucide-react';
+
 interface FlashcardCreatorProps {
   onCreateCard: (front: string, back: string) => boolean;
   canCreateCard: boolean;
   cardsCreatedToday: number;
 }
-export const FlashcardCreator = ({
-  onCreateCard,
-  canCreateCard,
-  cardsCreatedToday
-}: FlashcardCreatorProps) => {
+
+export const FlashcardCreator = ({ onCreateCard, canCreateCard, cardsCreatedToday }: FlashcardCreatorProps) => {
   const [front, setFront] = useState('');
   const [back, setBack] = useState('');
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (front.trim() && back.trim() && canCreateCard) {
@@ -26,6 +26,7 @@ export const FlashcardCreator = ({
       }
     }
   };
+
   const handleKeyPress = (e: React.KeyboardEvent, field: 'front' | 'back') => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -38,37 +39,59 @@ export const FlashcardCreator = ({
       }
     }
   };
-  return <div className="w-full max-w-2xl mx-auto">
+
+  return (
+    <div className="w-full max-w-2xl mx-auto">
       <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">Create Your Flashcard</h2>
-              <p className="text-gray-600">Cards created today: {cardsCreatedToday}/5</p>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2 font-space">Create Your Flashcard</h2>
+              <p className="text-gray-600 font-space">Cards created today: {cardsCreatedToday}/5</p>
             </div>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Front (Question/Topic)
+                <label className="block text-sm font-medium text-gray-700 mb-2 font-space">
+                  Front (Question/Topic) - {front.length}/150 characters
                 </label>
-                <Textarea value={front} onChange={e => setFront(e.target.value)} onKeyPress={e => handleKeyPress(e, 'front')} placeholder="Enter your question or topic..." className="min-h-[80px] resize-none border-gray-200 focus:border-indigo-400 focus:ring-indigo-400" maxLength={200} />
+                <Textarea 
+                  value={front} 
+                  onChange={e => setFront(e.target.value)} 
+                  onKeyPress={e => handleKeyPress(e, 'front')} 
+                  placeholder="Enter your question or topic..." 
+                  className="min-h-[80px] resize-none border-gray-200 focus:border-indigo-400 focus:ring-indigo-400 font-space" 
+                  maxLength={150} 
+                />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Back (Answer/Information)
+                <label className="block text-sm font-medium text-gray-700 mb-2 font-space">
+                  Back (Answer/Information) - {back.length}/300 characters
                 </label>
-                <Textarea data-field="back" value={back} onChange={e => setBack(e.target.value)} onKeyPress={e => handleKeyPress(e, 'back')} placeholder="Enter your answer or information..." className="min-h-[80px] resize-none border-gray-200 focus:border-indigo-400 focus:ring-indigo-400" maxLength={500} />
+                <Textarea 
+                  data-field="back" 
+                  value={back} 
+                  onChange={e => setBack(e.target.value)} 
+                  onKeyPress={e => handleKeyPress(e, 'back')} 
+                  placeholder="Enter your answer or information..." 
+                  className="min-h-[80px] resize-none border-gray-200 focus:border-indigo-400 focus:ring-indigo-400 font-space" 
+                  maxLength={300} 
+                />
               </div>
             </div>
 
-            <Button type="submit" disabled={!front.trim() || !back.trim() || !canCreateCard} className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-slate-950">
+            <Button 
+              type="submit" 
+              disabled={!front.trim() || !back.trim() || !canCreateCard} 
+              className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-space"
+            >
               <PlusCircle size={20} />
               {canCreateCard ? 'Create Flashcard' : 'Daily Limit Reached'}
             </Button>
           </form>
         </CardContent>
       </Card>
-    </div>;
+    </div>
+  );
 };
