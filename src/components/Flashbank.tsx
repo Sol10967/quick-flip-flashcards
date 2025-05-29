@@ -78,7 +78,7 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
           <div className="flex items-center space-x-6 mt-8">
             <button
               onClick={handlePrevious}
-              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50"
+              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 p-2"
               disabled={cards.length <= 1}
             >
               <img 
@@ -90,7 +90,7 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
             
             <button
               onClick={handleNext}
-              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50"
+              className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 p-2"
               disabled={cards.length <= 1}
             >
               <img 
@@ -143,7 +143,7 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
           <div className="flex items-center space-x-4">
             <button
               onClick={handlePrevious}
-              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md"
+              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md p-2"
               disabled={cards.length <= 1}
             >
               <img 
@@ -155,7 +155,7 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
             
             <button
               onClick={handleNext}
-              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md"
+              className="w-16 h-16 rounded-full bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-md p-2"
               disabled={cards.length <= 1}
             >
               <img 
