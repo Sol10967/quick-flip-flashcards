@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Flashcard } from '../types/flashcard';
 import { Card, CardContent } from './ui/card';
@@ -55,43 +56,50 @@ export const FlashcardDisplay = ({ card }: FlashcardDisplayProps) => {
         onClick={handleFlip}
         style={{ perspective: '1000px' }}
       >
-        <Card 
+        <div 
           className={`flashcard w-80 h-56 shadow-lg transition-transform duration-500 ${
             isFlipped ? 'flipped' : ''
           }`}
           style={{
             transformStyle: 'preserve-3d',
-            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+            backgroundImage: `url('/lovable-uploads/85cc6496-af3e-453f-a74a-2f4ff11a77f8.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            borderRadius: '12px',
+            border: 'none'
           }}
         >
           {/* Front Side */}
-          <CardContent 
-            className="absolute inset-0 flex items-center justify-center p-6 bg-white rounded-lg border border-gray-200"
+          <div 
+            className="absolute inset-0 flex items-center justify-center p-6 rounded-lg"
             style={{
               backfaceVisibility: 'hidden',
-              transform: 'rotateY(0deg)'
+              transform: 'rotateY(0deg)',
+              background: 'rgba(255, 255, 255, 0.95)'
             }}
           >
             <div className="text-center">
               <p className="text-lg font-medium text-gray-800 break-words">{card.front}</p>
               <p className="text-sm text-gray-500 mt-4">Tap to reveal answer</p>
             </div>
-          </CardContent>
+          </div>
 
           {/* Back Side */}
-          <CardContent 
-            className="absolute inset-0 flex items-center justify-center p-6 bg-indigo-50 rounded-lg border border-indigo-200"
+          <div 
+            className="absolute inset-0 flex items-center justify-center p-6 rounded-lg"
             style={{
               backfaceVisibility: 'hidden',
-              transform: 'rotateY(180deg)'
+              transform: 'rotateY(180deg)',
+              background: 'rgba(99, 102, 241, 0.1)'
             }}
           >
             <div className="text-center">
               <p className="text-lg text-gray-800 break-words">{card.back}</p>
               <p className="text-sm text-indigo-600 mt-4">Tap to see question</p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
       
       <Button
