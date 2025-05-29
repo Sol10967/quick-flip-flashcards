@@ -9,6 +9,7 @@ export interface AuthContextType {
   logout: () => void;
   upgradeUser: () => void;
   checkSubscription: () => Promise<void>;
+  isLoading: boolean;
 }
 
 export interface AuthProviderProps {
