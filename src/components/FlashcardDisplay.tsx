@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Flashcard } from '../types/flashcard';
 import { Card, CardContent } from './ui/card';
@@ -24,6 +23,25 @@ export const FlashcardDisplay = ({ card }: FlashcardDisplayProps) => {
     } else {
       const text = isFlipped ? card.back : card.front;
       const utterance = new SpeechSynthesisUtterance(text);
+      
+      // Set a cooler voice - try to find a more modern/engaging voice
+      const voices = speechSynthesis.getVoices();
+      const coolVoice = voices.find(voice => 
+        voice.name.includes('Google') || 
+        voice.name.includes('Microsoft') ||
+        voice.name.includes('Samantha') ||
+        voice.name.includes('Alex') ||
+        voice.name.includes('Daniel')
+      ) || voices.find(voice => voice.lang.startsWith('en')) || voices[0];
+      
+      if (coolVoice) {
+        utterance.voice = coolVoice;
+      }
+      
+      // Make it sound cooler with adjusted rate and pitch
+      utterance.rate = 0.9; // Slightly slower for clarity
+      utterance.pitch = 0.8; // Lower pitch for a cooler tone
+      
       utterance.onend = () => setIsReading(false);
       speechSynthesis.speak(utterance);
       setIsReading(true);
