@@ -1,7 +1,7 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types/flashcard';
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from '@/hooks/use-toast';
 
 interface AuthContextType {
   user: User | null;
@@ -158,46 +158,108 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const logout = async () => {
-    console.log('Logging out user...');
-    await supabase.auth.signOut();
-    setUser(null);
-    localStorage.removeItem('currentUser');
-    // Force redirect to auth page
-    window.location.href = '/';
+  const logout = () => {
+    console.log('Logout button clicked - starting logout process');
+    
+    try {
+      // Clear user state immediately
+      setUser(null);
+      localStorage.removeItem('currentUser');
+      
+      // Sign out from Supabase
+      supabase.auth.signOut().then(() => {
+        console.log('Supabase signout completed');
+        // Force navigation to home page after signout
+        window.location.href = '/';
+      }).catch((error) => {
+        console.error('Error during signout:', error);
+        // Still redirect even if signout fails
+        window.location.href = '/';
+      });
+      
+      toast({
+        title: "Signed out",
+        description: "You have been signed out successfully."
+      });
+    } catch (error) {
+      console.error('Error in logout function:', error);
+      // Force redirect even if there's an error
+      window.location.href = '/';
+    }
   };
 
   const upgradeUser = async () => {
+    console.log('Upgrade button clicked - starting upgrade process');
+    
     try {
-      console.log('Starting upgrade process...');
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData.session) {
-        console.error('No session found - user needs to be logged in');
+      // Show loading state to user
+      toast({
+        title: "Processing...",
+        description: "Redirecting to payment page..."
+      });
+
+      console.log('Getting current session...');
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        toast({
+          title: "Authentication Error",
+          description: "Please sign in again to continue.",
+          variant: "destructive"
+        });
         return;
       }
 
-      console.log('Creating checkout session...');
+      if (!sessionData.session) {
+        console.error('No session found - user needs to be logged in');
+        toast({
+          title: "Not Authenticated",
+          description: "Please sign in to upgrade your account.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      console.log('Session found, creating checkout...');
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         headers: {
           Authorization: `Bearer ${sessionData.session.access_token}`,
+          'Content-Type': 'application/json',
         },
       });
 
+      console.log('Create checkout response:', { data, error });
+
       if (error) {
         console.error('Error creating checkout:', error);
+        toast({
+          title: "Payment Error",
+          description: "Unable to create payment session. Please try again.",
+          variant: "destructive"
+        });
         return;
       }
 
-      console.log('Checkout response:', data);
       if (data?.url) {
-        console.log('Redirecting to:', data.url);
-        // Redirect to Stripe checkout in the same window
+        console.log('Redirecting to checkout URL:', data.url);
+        // Redirect to Stripe checkout
         window.location.href = data.url;
       } else {
-        console.error('No checkout URL received');
+        console.error('No checkout URL received in response');
+        toast({
+          title: "Payment Error",
+          description: "Invalid payment response. Please try again.",
+          variant: "destructive"
+        });
       }
     } catch (error) {
-      console.error('Error upgrading user:', error);
+      console.error('Error in upgradeUser function:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 

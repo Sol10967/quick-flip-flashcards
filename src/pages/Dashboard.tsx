@@ -160,17 +160,27 @@ export const Dashboard = () => {
   const canCreateCard = user?.isPremium || cardsCreatedToday < 5;
   const showUpgradePrompt = !user?.isPremium && cardsCreatedToday >= 5;
 
-  const handleUpgrade = () => {
-    console.log('Upgrade button clicked');
+  const handleUpgrade = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Dashboard upgrade button clicked');
     upgradeUser();
   };
 
-  const handleManageSubscription = async () => {
+  const handleManageSubscription = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     try {
       console.log('Manage subscription clicked');
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) {
         console.error('No session found for customer portal');
+        toast({
+          title: "Authentication Error",
+          description: "Please sign in again to manage your subscription.",
+          variant: "destructive"
+        });
         return;
       }
 
