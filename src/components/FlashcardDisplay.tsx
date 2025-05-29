@@ -68,7 +68,7 @@ export const FlashcardDisplay = ({
           transform: 'rotateY(180deg)'
         }}>
             <div className="text-center py-2 border-b border-gray-200">
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide font-space">Back</span>
+              <span className="text-xs font-semibold uppercase tracking-wide font-space text-slate-950">Back</span>
             </div>
             <div className="flex-1 flex items-center justify-center p-6">
               <p className="text-lg text-gray-800 break-words font-space">{card.back}</p>
