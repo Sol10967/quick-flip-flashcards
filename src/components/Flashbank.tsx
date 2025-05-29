@@ -1,14 +1,17 @@
+
 import { useState } from 'react';
 import { Flashcard } from '../types/flashcard';
 import { FlashcardDisplay } from './FlashcardDisplay';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { CreditCard, Minimize, ChevronLeft, ChevronRight, Maximize } from 'lucide-react';
+
 interface FlashbankProps {
   cards: Flashcard[];
   onUpgrade: () => void;
   showUpgradePrompt: boolean;
 }
+
 export const Flashbank = ({
   cards,
   onUpgrade,
@@ -17,6 +20,7 @@ export const Flashbank = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+
   if (cards.length === 0) {
     return <Card className="w-full max-w-2xl mx-auto">
         <CardContent className="p-8 text-center">
@@ -25,6 +29,7 @@ export const Flashbank = ({
         </CardContent>
       </Card>;
   }
+
   const handlePrevious = () => {
     if (isAnimating) return;
     setIsAnimating(true);
@@ -33,6 +38,7 @@ export const Flashbank = ({
       setIsAnimating(false);
     }, 150);
   };
+
   const handleNext = () => {
     if (isAnimating) return;
     setIsAnimating(true);
@@ -41,9 +47,11 @@ export const Flashbank = ({
       setIsAnimating(false);
     }, 150);
   };
+
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
   };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
       setIsFullscreen(false);
@@ -53,47 +61,58 @@ export const Flashbank = ({
       handleNext();
     }
   };
+
   if (isFullscreen) {
-    return <div className="fixed inset-0 z-50 flex items-center justify-center" style={{
+    return <div className="fixed inset-0 z-50 flex flex-col" style={{
       backgroundImage: 'url(/lovable-uploads/bb37e6bf-2b30-4799-b39f-13ac83221e6e.png)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat'
     }} onKeyDown={handleKeyDown} tabIndex={0}>
-        <div className="relative w-full h-full flex flex-col items-center justify-center p-8">
-          <Button onClick={toggleFullscreen} variant="outline" size="sm" className="absolute top-4 right-4 bg-white/90 hover:bg-white font-space">
+        {/* Exit button */}
+        <div className="absolute top-4 right-4">
+          <Button onClick={toggleFullscreen} variant="outline" size="sm" className="bg-white/90 hover:bg-white font-space">
             <Minimize size={16} />
             Exit Fullscreen
           </Button>
-          
-          <div className="text-center mb-6">
-            <p className="text-white text-lg font-medium font-space drop-shadow-lg">
-              Card {currentIndex + 1} of {cards.length}
-            </p>
-          </div>
-          
-          <div className={`transition-all duration-300 w-full max-w-4xl ${isAnimating ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
-            <div className="transform scale-150">
+        </div>
+        
+        {/* Card counter */}
+        <div className="flex-shrink-0 text-center pt-16 pb-8">
+          <p className="text-white text-2xl font-bold font-space drop-shadow-lg">
+            Card {currentIndex + 1} of {cards.length}
+          </p>
+        </div>
+        
+        {/* Centered flashcard */}
+        <div className="flex-1 flex items-center justify-center px-8">
+          <div className={`transition-all duration-300 ${isAnimating ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
+            <div className="transform scale-[2]">
               <FlashcardDisplay card={cards[currentIndex]} />
             </div>
           </div>
+        </div>
+        
+        {/* Navigation buttons */}
+        <div className="flex-shrink-0 flex justify-center items-center space-x-8 pb-16">
+          <Button onClick={handlePrevious} size="lg" variant="outline" className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 border-2" disabled={cards.length <= 1 || isAnimating}>
+            <ChevronLeft size={24} />
+          </Button>
           
-          <div className="flex items-center space-x-6 mt-8">
-            <Button onClick={handlePrevious} size="lg" variant="outline" className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 border-2" disabled={cards.length <= 1 || isAnimating}>
-              <ChevronLeft size={24} />
-            </Button>
-            
-            <Button onClick={handleNext} size="lg" variant="outline" className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 border-2" disabled={cards.length <= 1 || isAnimating}>
-              <ChevronRight size={24} />
-            </Button>
-          </div>
-          
-          <p className="text-white/70 text-sm mt-4 font-space drop-shadow-md">
+          <Button onClick={handleNext} size="lg" variant="outline" className="w-16 h-16 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50 border-2" disabled={cards.length <= 1 || isAnimating}>
+            <ChevronRight size={24} />
+          </Button>
+        </div>
+        
+        {/* Instructions */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+          <p className="text-white/70 text-sm font-space drop-shadow-md">
             Use arrow keys to navigate or ESC to exit fullscreen
           </p>
         </div>
       </div>;
   }
+
   return <div className="w-full max-w-2xl mx-auto space-y-6">
       <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
         <CardHeader className="text-center pb-4">
