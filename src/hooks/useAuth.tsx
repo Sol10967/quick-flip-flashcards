@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types/flashcard';
 import { supabase } from "@/integrations/supabase/client";
@@ -159,9 +158,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    localStorage.removeItem('currentUser');
+    try {
+      console.log('Logging out user...');
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error during logout:', error);
+      } else {
+        console.log('Logout successful');
+      }
+      // Clear local state regardless of supabase result
+      setUser(null);
+      localStorage.removeItem('currentUser');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still clear local state even if there's an error
+      setUser(null);
+      localStorage.removeItem('currentUser');
+    }
   };
 
   const upgradeUser = async () => {
