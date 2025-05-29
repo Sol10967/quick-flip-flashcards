@@ -17,33 +17,26 @@ import { useContext } from 'react';
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [isUpgrading, setIsUpgrading] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Check for existing session first
     const checkSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          console.log('Found existing session for user:', session.user.id);
-          await handleAuthenticatedUser(session.user.id, session.user.email!);
-        } else {
-          // Check localStorage for current user (fallback)
-          const savedUser = localStorage.getItem('currentUser');
-          if (savedUser) {
-            try {
-              const userData = JSON.parse(savedUser);
-              setUser(userData);
-            } catch (error) {
-              console.error('Error parsing saved user data:', error);
-              localStorage.removeItem('currentUser');
-            }
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        console.log('Found existing session for user:', session.user.id);
+        await handleAuthenticatedUser(session.user.id, session.user.email!);
+      } else {
+        // Check localStorage for current user (fallback)
+        const savedUser = localStorage.getItem('currentUser');
+        if (savedUser) {
+          try {
+            const userData = JSON.parse(savedUser);
+            setUser(userData);
+          } catch (error) {
+            console.error('Error parsing saved user data:', error);
+            localStorage.removeItem('currentUser');
           }
         }
-      } catch (error) {
-        console.error('Error checking session:', error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -59,8 +52,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(null);
         localStorage.removeItem('currentUser');
       }
-      
-      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -161,7 +152,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, upgradeUser, checkSubscription, isLoading }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, upgradeUser, checkSubscription }}>
       {children}
     </AuthContext.Provider>
   );
