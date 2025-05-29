@@ -1,17 +1,14 @@
-
 import { useState } from 'react';
 import { Flashcard } from '../types/flashcard';
 import { FlashcardDisplay } from './FlashcardDisplay';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { CreditCard, Minimize, ChevronLeft, ChevronRight, Maximize } from 'lucide-react';
-
 interface FlashbankProps {
   cards: Flashcard[];
   onUpgrade: () => void;
   showUpgradePrompt: boolean;
 }
-
 export const Flashbank = ({
   cards,
   onUpgrade,
@@ -20,7 +17,6 @@ export const Flashbank = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
-
   if (cards.length === 0) {
     return <Card className="w-full max-w-2xl mx-auto">
         <CardContent className="p-8 text-center">
@@ -29,7 +25,6 @@ export const Flashbank = ({
         </CardContent>
       </Card>;
   }
-
   const handlePrevious = () => {
     if (isAnimating) return;
     setIsAnimating(true);
@@ -38,7 +33,6 @@ export const Flashbank = ({
       setIsAnimating(false);
     }, 150);
   };
-
   const handleNext = () => {
     if (isAnimating) return;
     setIsAnimating(true);
@@ -47,11 +41,9 @@ export const Flashbank = ({
       setIsAnimating(false);
     }, 150);
   };
-
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
   };
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
       setIsFullscreen(false);
@@ -61,7 +53,6 @@ export const Flashbank = ({
       handleNext();
     }
   };
-
   if (isFullscreen) {
     return <div className="fixed inset-0 z-50 flex flex-col" style={{
       backgroundImage: 'url(/lovable-uploads/bb37e6bf-2b30-4799-b39f-13ac83221e6e.png)',
@@ -106,13 +97,10 @@ export const Flashbank = ({
         
         {/* Instructions */}
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-          <p className="text-white/70 text-sm font-space drop-shadow-md">
-            Use arrow keys to navigate or ESC to exit fullscreen
-          </p>
+          
         </div>
       </div>;
   }
-
   return <div className="w-full max-w-2xl mx-auto space-y-6">
       <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
         <CardHeader className="text-center pb-4">
