@@ -71,7 +71,7 @@ export const FlashcardDisplay = ({
         }}>
             <div className="text-center">
               <p className="text-lg text-gray-800 break-words">{card.back}</p>
-              <p className="text-sm text-indigo-600 mt-4">Tap to see question</p>
+              
             </div>
           </div>
         </div>
