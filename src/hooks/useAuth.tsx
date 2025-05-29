@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types/flashcard';
 import { supabase } from "@/integrations/supabase/client";
@@ -209,6 +210,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           description: "Please sign in again to continue.",
           variant: "destructive"
         });
+        setIsUpgrading(false);
         return;
       }
 
@@ -219,6 +221,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           description: "Please sign in to upgrade your account.",
           variant: "destructive"
         });
+        setIsUpgrading(false);
         return;
       }
 
@@ -239,11 +242,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           description: "Unable to create payment session. Please try again.",
           variant: "destructive"
         });
+        setIsUpgrading(false);
         return;
       }
 
       if (data?.url) {
         console.log('Redirecting to checkout URL:', data.url);
+        // Reset the upgrading state before redirect
+        setIsUpgrading(false);
         window.location.href = data.url;
       } else {
         console.error('No checkout URL received in response');
@@ -252,6 +258,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           description: "Invalid payment response. Please try again.",
           variant: "destructive"
         });
+        setIsUpgrading(false);
       }
     } catch (error) {
       console.error('Error in upgradeUser function:', error);
@@ -260,7 +267,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         description: "An unexpected error occurred. Please try again.",
         variant: "destructive"
       });
-    } finally {
       setIsUpgrading(false);
     }
   };
