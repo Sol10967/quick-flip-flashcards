@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Button } from './ui/button';
@@ -38,7 +37,7 @@ export const AuthForm = () => {
             {isLogin ? 'Sign In' : 'Create Account'}
           </CardTitle>
           <CardDescription className="text-center">
-            {isLogin ? 'Welcome back to FlashMaster' : 'Start your learning journey'}
+            {isLogin ? 'Welcome to FlashMaster' : 'Start your learning journey'}
           </CardDescription>
         </CardHeader>
         <CardContent>
