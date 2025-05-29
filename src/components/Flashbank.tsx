@@ -82,9 +82,9 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
               disabled={cards.length <= 1}
             >
               <img 
-                src="/lovable-uploads/f526d691-7236-45bd-a746-9f473f6d79d4.png" 
+                src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
                 alt="Previous" 
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain transform rotate-180"
               />
             </button>
             
@@ -94,7 +94,7 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
               disabled={cards.length <= 1}
             >
               <img 
-                src="/lovable-uploads/22e4fec8-a57b-4308-8273-c1606857d6d9.png" 
+                src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
                 alt="Next" 
                 className="w-full h-full object-contain"
               />
@@ -147,9 +147,9 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
               disabled={cards.length <= 1}
             >
               <img 
-                src="/lovable-uploads/f526d691-7236-45bd-a746-9f473f6d79d4.png" 
+                src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
                 alt="Previous" 
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain transform rotate-180"
               />
             </button>
             
@@ -159,7 +159,7 @@ export const Flashbank = ({ cards, onUpgrade, showUpgradePrompt }: FlashbankProp
               disabled={cards.length <= 1}
             >
               <img 
-                src="/lovable-uploads/22e4fec8-a57b-4308-8273-c1606857d6d9.png" 
+                src="/lovable-uploads/9531331e-9a5f-4ab9-b4c8-57ecd9ab65d6.png" 
                 alt="Next" 
                 className="w-full h-full object-contain"
               />
