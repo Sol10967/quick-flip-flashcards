@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Flashcard } from '../types/flashcard';
 import { useAuth } from '../hooks/useAuth';
 import { FlashcardCreator } from '../components/FlashcardCreator';
@@ -15,6 +14,7 @@ export const Dashboard = () => {
   const { user, upgradeUser, checkSubscription } = useAuth();
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [cardsCreatedToday, setCardsCreatedToday] = useState(0);
+  const upgradePromptRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (user) {
@@ -72,6 +72,16 @@ export const Dashboard = () => {
       users[userIndex].cardsCreatedToday = newCount;
       users[userIndex].lastCardCreationDate = today;
       localStorage.setItem('users', JSON.stringify(users));
+    }
+
+    // Auto-scroll to upgrade prompt when hitting the limit
+    if (!user?.isPremium && newCount >= 5) {
+      setTimeout(() => {
+        upgradePromptRef.current?.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }, 500);
     }
 
     toast({
@@ -167,7 +177,7 @@ export const Dashboard = () => {
           />
         </section>
 
-        <section>
+        <section ref={upgradePromptRef}>
           <Flashbank
             cards={cards}
             onUpgrade={handleUpgrade}
