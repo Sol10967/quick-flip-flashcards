@@ -40,7 +40,7 @@ export const AuthForm = () => {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      <Card className="w-full max-w-md shadow-xl bg-white/90 backdrop-blur-sm">
+      <Card className="w-full max-w-md shadow-2xl bg-white">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
             {isLogin ? 'Sign In' : 'Create Account'}
