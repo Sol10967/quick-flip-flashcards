@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Flashcard } from '../types/flashcard';
 import { useAuth } from '../hooks/useAuth';
@@ -160,9 +159,7 @@ export const Dashboard = () => {
   const canCreateCard = user?.isPremium || cardsCreatedToday < 5;
   const showUpgradePrompt = !user?.isPremium && cardsCreatedToday >= 5;
 
-  const handleUpgrade = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleUpgrade = () => {
     console.log('Dashboard upgrade button clicked');
     upgradeUser();
   };
