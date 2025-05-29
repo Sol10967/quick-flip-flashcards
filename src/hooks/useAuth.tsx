@@ -167,8 +167,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const upgradeUser = async () => {
     try {
       const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData.session) return;
+      if (!sessionData.session) {
+        console.error('No session found');
+        return;
+      }
 
+      console.log('Creating checkout session...');
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         headers: {
           Authorization: `Bearer ${sessionData.session.access_token}`,
@@ -180,8 +184,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
+      console.log('Checkout response:', data);
       if (data.url) {
-        window.open(data.url, '_blank');
+        // Redirect to Stripe checkout in the same window
+        window.location.href = data.url;
       }
     } catch (error) {
       console.error('Error upgrading user:', error);

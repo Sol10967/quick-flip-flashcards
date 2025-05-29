@@ -161,13 +161,18 @@ export const Dashboard = () => {
   const showUpgradePrompt = !user?.isPremium && cardsCreatedToday >= 5;
 
   const handleUpgrade = () => {
+    console.log('Upgrade button clicked');
     upgradeUser();
   };
 
   const handleManageSubscription = async () => {
     try {
+      console.log('Manage subscription clicked');
       const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData.session) return;
+      if (!sessionData.session) {
+        console.error('No session found for customer portal');
+        return;
+      }
 
       const { data, error } = await supabase.functions.invoke('customer-portal', {
         headers: {
@@ -185,8 +190,9 @@ export const Dashboard = () => {
         return;
       }
 
+      console.log('Customer portal response:', data);
       if (data.url) {
-        window.open(data.url, '_blank');
+        window.location.href = data.url;
       }
     } catch (error) {
       console.error('Error managing subscription:', error);
