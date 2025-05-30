@@ -22,6 +22,7 @@ export const Flashbank = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [cardKey, setCardKey] = useState(0); // Key to force re-render and reset flip state
   const isMobile = useIsMobile();
 
   // Adjust current index if it's out of bounds after deletion
@@ -53,6 +54,7 @@ export const Flashbank = ({
   }, [isFullscreen, isMobile]);
 
   if (cards.length === 0) {
+    
     return (
       <div className="space-y-6">
         <Card className="w-full max-w-2xl mx-auto">
@@ -85,6 +87,7 @@ export const Flashbank = ({
     setIsAnimating(true);
     setTimeout(() => {
       setCurrentIndex(prev => prev > 0 ? prev - 1 : cards.length - 1);
+      setCardKey(prev => prev + 1); // Force re-render to reset flip state
       setIsAnimating(false);
     }, 150);
   };
@@ -94,6 +97,7 @@ export const Flashbank = ({
     setIsAnimating(true);
     setTimeout(() => {
       setCurrentIndex(prev => prev < cards.length - 1 ? prev + 1 : 0);
+      setCardKey(prev => prev + 1); // Force re-render to reset flip state
       setIsAnimating(false);
     }, 150);
   };
@@ -132,7 +136,7 @@ export const Flashbank = ({
         onKeyDown={handleKeyDown} 
         tabIndex={0}
       >
-        {/* Top section with exit button and card counter */}
+        
         <div className={`flex-shrink-0 flex ${isMobile ? 'flex-col' : 'flex-row'} justify-between items-center p-4 ${isMobile ? 'pt-safe-top' : ''}`}>
           <div className={`${isMobile ? 'order-2 mt-2' : 'order-1'}`}>
             <p className={`text-white font-bold font-space drop-shadow-lg ${isMobile ? 'text-lg' : 'text-2xl'}`}>
@@ -147,16 +151,16 @@ export const Flashbank = ({
           </div>
         </div>
         
-        {/* Centered flashcard */}
+        
         <div className="flex-1 flex items-center justify-center px-4 min-h-0">
           <div className={`transition-all duration-300 ${isAnimating ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
             <div className={`${isMobile ? 'scale-100' : 'transform scale-[2]'}`}>
-              <FlashcardDisplay card={cards[currentIndex]} onDelete={handleDeleteCard} />
+              <FlashcardDisplay key={cardKey} card={cards[currentIndex]} onDelete={handleDeleteCard} />
             </div>
           </div>
         </div>
         
-        {/* Navigation buttons */}
+        
         <div className={`flex-shrink-0 flex justify-center items-center space-x-8 ${isMobile ? 'pb-safe-bottom pb-4' : 'pb-16'}`}>
           <Button 
             onClick={handlePrevious} 
@@ -206,7 +210,7 @@ export const Flashbank = ({
         
         <CardContent className="flex flex-col items-center space-y-6">
           <div className={`transition-all duration-300 ${isAnimating ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
-            <FlashcardDisplay card={cards[currentIndex]} onDelete={handleDeleteCard} />
+            <FlashcardDisplay key={cardKey} card={cards[currentIndex]} onDelete={handleDeleteCard} />
           </div>
           
           <div className="flex items-center space-x-4">
