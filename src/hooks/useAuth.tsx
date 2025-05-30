@@ -16,27 +16,41 @@ import { useContext } from 'react';
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isUpgrading, setIsUpgrading] = useState(false);
 
   useEffect(() => {
+    console.log('AuthProvider useEffect - setting up auth');
+    
     // Check for existing session first
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        console.log('Found existing session for user:', session.user.id);
-        await handleAuthenticatedUser(session.user.id, session.user.email!);
-      } else {
-        // Check localStorage for current user (fallback)
-        const savedUser = localStorage.getItem('currentUser');
-        if (savedUser) {
-          try {
-            const userData = JSON.parse(savedUser);
-            setUser(userData);
-          } catch (error) {
-            console.error('Error parsing saved user data:', error);
-            localStorage.removeItem('currentUser');
+      try {
+        console.log('Checking existing session...');
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('Session check result:', session?.user?.id);
+        
+        if (session?.user) {
+          console.log('Found existing session for user:', session.user.id);
+          await handleAuthenticatedUser(session.user.id, session.user.email!);
+        } else {
+          // Check localStorage for current user (fallback)
+          const savedUser = localStorage.getItem('currentUser');
+          if (savedUser) {
+            try {
+              const userData = JSON.parse(savedUser);
+              console.log('Found saved user data:', userData.id);
+              setUser(userData);
+            } catch (error) {
+              console.error('Error parsing saved user data:', error);
+              localStorage.removeItem('currentUser');
+            }
           }
         }
+      } catch (error) {
+        console.error('Error checking session:', error);
+      } finally {
+        setLoading(false);
+        console.log('Auth initialization complete');
       }
     };
 
@@ -52,6 +66,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(null);
         localStorage.removeItem('currentUser');
       }
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -152,7 +167,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, upgradeUser, checkSubscription }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout, upgradeUser, checkSubscription }}>
       {children}
     </AuthContext.Provider>
   );
