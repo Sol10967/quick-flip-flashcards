@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from '@/hooks/use-toast';
 import { User } from '../types/flashcard';
@@ -161,63 +160,12 @@ export const performLogout = () => {
 
 export const performUpgrade = async (): Promise<boolean> => {
   try {
-    console.log('Getting current session...');
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    console.log('Upgrade button clicked - redirecting to Stripe payment link');
     
-    if (sessionError) {
-      console.error('Session error:', sessionError);
-      toast({
-        title: "Authentication Error",
-        description: "Please sign in again to continue.",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    if (!sessionData.session) {
-      console.error('No session found - user needs to be logged in');
-      toast({
-        title: "Not Authenticated",
-        description: "Please sign in to upgrade your account.",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    console.log('Session found, creating checkout...');
-    const { data, error } = await supabase.functions.invoke('create-checkout', {
-      headers: {
-        Authorization: `Bearer ${sessionData.session.access_token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    console.log('Create checkout response:', { data, error });
-
-    if (error) {
-      console.error('Error creating checkout:', error);
-      toast({
-        title: "Payment Error",
-        description: "Unable to create payment session. Please try again.",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    if (data?.url) {
-      console.log('Redirecting to checkout URL:', data.url);
-      // Immediately redirect to Stripe checkout
-      window.location.href = data.url;
-      return true;
-    } else {
-      console.error('No checkout URL received in response');
-      toast({
-        title: "Payment Error",
-        description: "Invalid payment response. Please try again.",
-        variant: "destructive"
-      });
-      return false;
-    }
+    // Redirect directly to the provided Stripe payment link
+    window.location.href = 'https://buy.stripe.com/dRmfZi3P9cT4bnR7JX2Ji00';
+    
+    return true;
   } catch (error) {
     console.error('Error in upgrade function:', error);
     toast({
